@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
-// 词库 - 300个精选具有哲理和指引意义的词句
+// 词库 - 精选具有哲理和指引意义的词句
 const fortunes = [
-  // ===== 四字箴言 (150个) =====
+  // ===== 四字箴言 =====
   { text: "一帆风顺", type: "吉" },
   { text: "静待花开", type: "缓" },
   { text: "掩耳盗铃", type: "警" },
@@ -52,15 +52,6 @@ const fortunes = [
   { text: "顺水推舟", type: "策" },
   { text: "借力打力", type: "策" },
   { text: "以逸待劳", type: "策" },
-  { text: "声东击西", type: "策" },
-  { text: "暗度陈仓", type: "策" },
-  { text: "围魏救赵", type: "策" },
-  { text: "欲擒故纵", type: "策" },
-  { text: "抛砖引玉", type: "策" },
-  { text: "釜底抽薪", type: "决" },
-  { text: "金蝉脱壳", type: "策" },
-  { text: "关门捉贼", type: "决" },
-  { text: "反客为主", type: "决" },
   { text: "苦尽甘来", type: "吉" },
   { text: "守得云开", type: "吉" },
   { text: "雨过天晴", type: "吉" },
@@ -74,16 +65,6 @@ const fortunes = [
   { text: "前程似锦", type: "吉" },
   { text: "鹏程万里", type: "吉" },
   { text: "步步高升", type: "吉" },
-  { text: "锦上添花", type: "吉" },
-  { text: "如愿以偿", type: "吉" },
-  { text: "天时地利", type: "吉" },
-  { text: "贵人相助", type: "吉" },
-  { text: "逢凶化吉", type: "吉" },
-  { text: "化险为夷", type: "吉" },
-  { text: "转危为安", type: "吉" },
-  { text: "绝处逢生", type: "吉" },
-  { text: "枯木逢春", type: "吉" },
-  { text: "时来运转", type: "吉" },
   { text: "好事多磨", type: "缓" },
   { text: "事缓则圆", type: "缓" },
   { text: "从长计议", type: "缓" },
@@ -92,80 +73,35 @@ const fortunes = [
   { text: "步步为营", type: "缓" },
   { text: "细水长流", type: "缓" },
   { text: "日积月累", type: "缓" },
-  { text: "聚沙成塔", type: "缓" },
-  { text: "积少成多", type: "缓" },
   { text: "滴水穿石", type: "缓" },
-  { text: "铁杵磨针", type: "缓" },
-  { text: "绳锯木断", type: "缓" },
   { text: "锲而不舍", type: "缓" },
-  { text: "坚持不懈", type: "缓" },
   { text: "有备无患", type: "慎" },
   { text: "居安思危", type: "慎" },
   { text: "防患未然", type: "慎" },
   { text: "谨小慎微", type: "慎" },
-  { text: "如履薄冰", type: "慎" },
-  { text: "战战兢兢", type: "慎" },
   { text: "深思熟虑", type: "慎" },
-  { text: "权衡利弊", type: "慎" },
-  { text: "左右权衡", type: "慎" },
-  { text: "瞻前顾后", type: "慎" },
-  { text: "小心驶船", type: "慎" },
-  { text: "谋定后动", type: "慎" },
   { text: "知己知彼", type: "慎" },
   { text: "量力而行", type: "慎" },
-  { text: "因人而异", type: "慎" },
-  { text: "见机行事", type: "慎" },
   { text: "过犹不及", type: "警" },
   { text: "画蛇添足", type: "警" },
   { text: "弄巧成拙", type: "警" },
-  { text: "自作聪明", type: "警" },
-  { text: "班门弄斧", type: "警" },
-  { text: "螳臂当车", type: "警" },
-  { text: "以卵击石", type: "警" },
-  { text: "飞蛾扑火", type: "警" },
-  { text: "杯弓蛇影", type: "警" },
-  { text: "草木皆兵", type: "警" },
-  { text: "风声鹤唳", type: "警" },
-  { text: "捕风捉影", type: "警" },
-  { text: "空穴来风", type: "警" },
   { text: "杞人忧天", type: "警" },
-  { text: "庸人自扰", type: "警" },
   { text: "作茧自缚", type: "警" },
-  { text: "自食其果", type: "警" },
-  { text: "搬石砸脚", type: "警" },
-  { text: "得不偿失", type: "警" },
-  { text: "因小失大", type: "警" },
-  { text: "顾此失彼", type: "警" },
-  { text: "舍本逐末", type: "警" },
-  { text: "本末倒置", type: "警" },
-  { text: "南辕北辙", type: "警" },
-  { text: "缘木求鱼", type: "警" },
-  { text: "刻舟求剑", type: "警" },
-  { text: "揠苗助长", type: "警" },
-  { text: "急于求成", type: "警" },
-  { text: "操之过急", type: "警" },
   { text: "当机立断", type: "决" },
   { text: "快刀斩麻", type: "决" },
   { text: "雷厉风行", type: "决" },
   { text: "势在必行", type: "决" },
-  { text: "势不可挡", type: "决" },
   { text: "义无反顾", type: "决" },
-  { text: "孤注一掷", type: "决" },
   { text: "背水一战", type: "决" },
-  { text: "放手一搏", type: "决" },
   { text: "勇往直前", type: "决" },
-  { text: "激流勇进", type: "决" },
   { text: "乘风破浪", type: "决" },
-  { text: "披荆斩棘", type: "决" },
-
-  // ===== 短句箴言 (100个) =====
+  // ===== 短句箴言 =====
   { text: "答案在心中", type: "悟" },
   { text: "再等等看", type: "待" },
   { text: "是时候了", type: "决" },
   { text: "放下执念", type: "止" },
   { text: "相信直觉", type: "决" },
   { text: "退一步海阔天空", type: "策" },
-  { text: "山重水复疑无路", type: "待" },
   { text: "万事俱备", type: "吉" },
   { text: "尚有变数", type: "待" },
   { text: "贵人将至", type: "吉" },
@@ -176,91 +112,31 @@ const fortunes = [
   { text: "此路不通", type: "止" },
   { text: "另寻他路", type: "策" },
   { text: "换个角度", type: "策" },
-  { text: "退而求其次", type: "策" },
-  { text: "柳暗花明又一村", type: "吉" },
   { text: "天无绝人之路", type: "吉" },
-  { text: "船到桥头自然直", type: "缓" },
-  { text: "车到山前必有路", type: "缓" },
   { text: "来日方长", type: "缓" },
-  { text: "路遥知马力", type: "缓" },
-  { text: "日久见人心", type: "缓" },
   { text: "事在人为", type: "决" },
-  { text: "人定胜天", type: "决" },
   { text: "有志者事竟成", type: "决" },
-  { text: "皇天不负有心人", type: "吉" },
   { text: "机不可失", type: "决" },
   { text: "时不我待", type: "决" },
-  { text: "此时不搏何时搏", type: "决" },
-  { text: "该出手时就出手", type: "决" },
-  { text: "三十六计走为上", type: "策" },
   { text: "留得青山在", type: "策" },
-  { text: "小不忍则乱大谋", type: "慎" },
-  { text: "忍一时风平浪静", type: "慎" },
   { text: "吃亏是福", type: "悟" },
   { text: "难得糊涂", type: "悟" },
   { text: "大智若愚", type: "悟" },
-  { text: "返璞归真", type: "悟" },
-  { text: "无为而治", type: "悟" },
-  { text: "顺天应人", type: "悟" },
   { text: "天道酬勤", type: "吉" },
   { text: "善有善报", type: "吉" },
   { text: "福祸相依", type: "悟" },
-  { text: "祸兮福所倚", type: "悟" },
-  { text: "失之东隅收之桑榆", type: "悟" },
-  { text: "塞翁失马焉知非福", type: "悟" },
-  { text: "世事难料", type: "待" },
-  { text: "天机不可泄露", type: "待" },
   { text: "静观其变", type: "待" },
-  { text: "以不变应万变", type: "待" },
-  { text: "兵来将挡", type: "策" },
-  { text: "水来土掩", type: "策" },
-  { text: "见招拆招", type: "策" },
-  { text: "随机应变", type: "策" },
   { text: "伺机而动", type: "待" },
   { text: "按兵不动", type: "待" },
   { text: "暂避锋芒", type: "待" },
   { text: "养精蓄锐", type: "待" },
-  { text: "卧薪尝胆", type: "待" },
-  { text: "忍辱负重", type: "待" },
-  { text: "蛰伏待机", type: "待" },
   { text: "一动不如一静", type: "止" },
-  { text: "过犹不及", type: "止" },
   { text: "适可而止", type: "止" },
-  { text: "点到为止", type: "止" },
   { text: "见好就收", type: "止" },
   { text: "急流勇退", type: "止" },
-  { text: "功成身退", type: "止" },
-  { text: "激流勇退", type: "止" },
-  { text: "知难而退", type: "止" },
   { text: "悬崖勒马", type: "止" },
   { text: "回头是岸", type: "止" },
-  { text: "迷途知返", type: "止" },
-  { text: "亡羊补牢", type: "慎" },
-  { text: "防微杜渐", type: "慎" },
-  { text: "未雨绸缪", type: "慎" },
-  { text: "有备无患", type: "慎" },
-  { text: "三思而后行", type: "慎" },
-  { text: "谋定而后动", type: "慎" },
-  { text: "一着不慎满盘皆输", type: "警" },
-  { text: "千里之堤毁于蚁穴", type: "警" },
-  { text: "小心无大错", type: "慎" },
-  { text: "细节决定成败", type: "慎" },
-  { text: "行百里者半九十", type: "警" },
-  { text: "骄兵必败", type: "警" },
-  { text: "满招损谦受益", type: "警" },
-  { text: "虚心使人进步", type: "悟" },
-  { text: "活到老学到老", type: "悟" },
-  { text: "温故而知新", type: "悟" },
-  { text: "学无止境", type: "悟" },
-  { text: "读万卷书行万里路", type: "悟" },
-  { text: "纸上得来终觉浅", type: "悟" },
-  { text: "实践出真知", type: "悟" },
-  { text: "条条大路通罗马", type: "策" },
-  { text: "殊途同归", type: "策" },
-  { text: "不拘一格", type: "策" },
-  { text: "另辟蹊径", type: "策" },
-
-  // ===== 单字真言 (50个) =====
+  // ===== 单字真言 =====
   { text: "等", type: "待" },
   { text: "行", type: "决" },
   { text: "止", type: "止" },
@@ -275,54 +151,31 @@ const fortunes = [
   { text: "退", type: "策" },
   { text: "守", type: "慎" },
   { text: "攻", type: "决" },
-  { text: "藏", type: "策" },
-  { text: "显", type: "决" },
   { text: "明", type: "悟" },
-  { text: "暗", type: "策" },
   { text: "刚", type: "决" },
   { text: "柔", type: "策" },
-  { text: "快", type: "决" },
-  { text: "慢", type: "缓" },
-  { text: "轻", type: "缓" },
-  { text: "重", type: "慎" },
-  { text: "急", type: "决" },
-  { text: "缓", type: "缓" },
   { text: "稳", type: "慎" },
-  { text: "险", type: "警" },
   { text: "安", type: "吉" },
-  { text: "危", type: "警" },
   { text: "吉", type: "吉" },
-  { text: "凶", type: "警" },
   { text: "福", type: "吉" },
-  { text: "祸", type: "警" },
   { text: "善", type: "吉" },
-  { text: "恶", type: "警" },
   { text: "真", type: "悟" },
-  { text: "假", type: "警" },
-  { text: "虚", type: "警" },
-  { text: "实", type: "悟" },
-  { text: "空", type: "悟" },
-  { text: "满", type: "警" },
-  { text: "盈", type: "警" },
-  { text: "亏", type: "慎" },
   { text: "圆", type: "吉" },
-  { text: "缺", type: "待" },
   { text: "始", type: "决" },
-  { text: "终", type: "止" },
   { text: "生", type: "吉" },
-  { text: "灭", type: "止" },
 ];
 
+// 中国传统配色 - 在宣纸上使用深色墨色系
 const typeColors = {
-  "吉": "#c9a959",
-  "缓": "#7d9d7d",
-  "警": "#b85c5c",
-  "策": "#6b8cae",
-  "慎": "#9b8574",
-  "待": "#8b7db8",
-  "决": "#c47d5c",
-  "止": "#6b6b6b",
-  "悟": "#8b6b8b",
+  "吉": "#8B4513", // 赭石色
+  "缓": "#2F4F4F", // 黛青色
+  "警": "#8B0000", // 朱红深色
+  "策": "#191970", // 藏蓝色
+  "慎": "#4A4A4A", // 墨灰色
+  "待": "#483D8B", // 紫檀色
+  "决": "#B22222", // 朱砂色
+  "止": "#36454F", // 玄青色
+  "悟": "#4B0082", // 绛紫色
 };
 
 const typeDescriptions = {
@@ -337,9 +190,8 @@ const typeDescriptions = {
   "悟": "心中自有答案，向内求索",
 };
 
-
-// 汉字数字映射 (纯 JavaScript)
-const toChineseNum = function (num) {
+// 汉字数字映射
+const toChineseNum = (num) => {
   if (num === 0) return '零';
   const digits = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
   const units = ['', '十', '百', '千'];
@@ -358,28 +210,77 @@ const toChineseNum = function (num) {
   return result.replace(/^一十/, '十');
 };
 
-// 对联组件
-const Couplets = function ({ left = "清风明月本无价", right = "近水远山皆有情" }) {
+// 水墨背景组件
+const InkMistBackground = () => {
+  const blobs = useMemo(() => [
+    { size: 300, top: 5, left: 10, duration: 90, delay: 0 },
+    { size: 250, top: 70, left: 80, duration: 100, delay: 5 },
+    { size: 350, top: 40, left: 50, duration: 110, delay: 10 },
+    { size: 200, top: 85, left: 25, duration: 80, delay: 3 },
+    { size: 280, top: 20, left: 75, duration: 95, delay: 8 },
+  ], []);
+
+  return (
+    <div className="ink-bg">
+      {blobs.map((b, i) => (
+        <div
+          key={i}
+          className="ink-blob"
+          style={{
+            '--size': `${b.size}px`,
+            '--top': `${b.top}%`,
+            '--left': `${b.left}%`,
+            '--dur': `${b.duration}s`,
+            '--delay': `${b.delay}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// 对联组件 - 强制竖排
+const Couplets = ({ left = "思念无因见 常望明月浅", right = "思卿如满月 夜夜减清辉" }) => {
   return (
     <>
-      {/* 左侧对联 */}
-      <div className="absolute left-0 top-0 h-full flex items-center pl-4 md:pl-6 lg:pl-8 z-0 pointer-events-none">
-        <div className="flex flex-col items-center text-amber-100 text-xl md:text-2xl lg:text-3xl font-serif writing-vertical-rl leading-[1.4] opacity-90">
-          {left.split('').map((char, i) => (
-            <span key={i} className="tracking-wider">{char}</span>
-          ))}
-        </div>
+      {/* 左联 */}
+      <div className="couplet couplet-left">
+        {left.split('').map((char, i) => (
+          <span key={i} className="couplet-char">{char}</span>
+        ))}
       </div>
-
-      {/* 右侧对联 */}
-      <div className="absolute right-0 top-0 h-full flex items-center pr-4 md:pr-6 lg:pr-8 z-0 pointer-events-none">
-        <div className="flex flex-col items-center text-amber-100 text-xl md:text-2xl lg:text-3xl font-serif writing-vertical-rl leading-[1.4] opacity-90">
-          {right.split('').map((char, i) => (
-            <span key={i} className="tracking-wider">{char}</span>
-          ))}
-        </div>
+      {/* 右联 */}
+      <div className="couplet couplet-right">
+        {right.split('').map((char, i) => (
+          <span key={i} className="couplet-char">{char}</span>
+        ))}
       </div>
     </>
+  );
+};
+
+// 宣纸书页组件
+const RicePaper = ({ children, className = "", onClick, clickable = false, size = "normal" }) => {
+  const sizeClass = size === "large" ? "paper-large" : size === "cover" ? "paper-cover" : "";
+  return (
+    <div
+      className={`rice-paper ${sizeClass} ${className} ${clickable ? 'paper-clickable' : ''}`}
+      onClick={onClick}
+    >
+      {/* 宣纸纹理层 */}
+      <div className="paper-base" />
+      <div className="paper-fiber" />
+      <div className="paper-aged" />
+      {/* 内容 */}
+      <div className="paper-content">
+        {children}
+      </div>
+      {/* 四角花纹 */}
+      <div className="corner-ornament corner-tl" />
+      <div className="corner-ornament corner-tr" />
+      <div className="corner-ornament corner-bl" />
+      <div className="corner-ornament corner-br" />
+    </div>
   );
 };
 
@@ -413,141 +314,98 @@ export default function FortuneBook() {
 
   const isLongText = fortune && fortune.text.length > 6;
 
-  // 动态背景：缓慢飘动的墨点
-  const renderInkDots = () => {
-    return Array.from({ length: 12 }).map((_, i) => (
-      <div
-        key={i}
-        className="absolute rounded-full bg-amber-900/10 animate-float"
-        style={{
-          width: `${Math.random() * 20 + 10}px`,
-          height: `${Math.random() * 20 + 10}px`,
-          top: `${Math.random() * 100}%`,
-          left: `${Math.random() * 100}%`,
-          animationDuration: `${20 + Math.random() * 30}s`,
-          animationDelay: `${Math.random() * 5}s`,
-        }}
-      />
-    ));
-  };
-
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-4 md:p-6 font-serif overflow-hidden relative">
-      {/* 动态背景墨点 */}
-      {renderInkDots()}
+    <div className="fortune-app">
+      {/* 水墨背景 */}
+      <InkMistBackground />
 
       {/* 对联 */}
       <Couplets />
 
-      {/* 标题区域 */}
-      <div className="absolute top-6 md:top-8 text-center z-10">
-        <h1 className="text-amber-200 text-2xl md:text-3xl tracking-[0.3em] font-handwriting">
-          解忧文字铺
-        </h1>
-        <h2 className="text-rose-500 text-lg md:text-xl font-serif mt-2">
-          江大小姐专属
-        </h2>
-        <div className="w-16 md:w-20 h-px bg-amber-900/30 mx-auto mt-3" />
-      </div>
+      {/* 标题 */}
+      <header className="app-header">
+        <h1 className="main-title">解忧文字铺</h1>
+        <h2 className="sub-title">江大小姐专属</h2>
+        <div className="title-line" />
+      </header>
 
-      {/* 主体区域 */}
-      <div className="flex flex-col items-center justify-center flex-1 w-full max-w-2xl px-2 md:px-4 z-10">
+      {/* 主区域 */}
+      <main className="main-area">
         {/* 初始状态 */}
         {stage === 'initial' && (
-          <div className="text-center animate-fade-in">
-            <div className="w-56 h-76 md:w-64 md:h-80 border border-amber-900/50 rounded-sm mx-auto mb-10 md:mb-12 flex items-center justify-center bg-[url('/paper-texture.png')] bg-cover shadow-lg relative">
-              <span className="text-amber-100 text-7xl md:text-8xl font-handwriting">卷</span>
-              <div className="absolute inset-0 bg-[url('/paper-overlay.png')] opacity-20 rounded-sm" />
-            </div>
-            <p className="text-amber-200 text-lg md:text-xl tracking-widest mb-8 leading-relaxed">
-              心中默念你的问题
-            </p>
-            <button
-              onClick={handleFocus}
-              className="px-10 py-4 border border-amber-800 text-amber-100 text-lg tracking-widest hover:bg-amber-900/30 hover:border-amber-600 active:bg-amber-800/50 transition-all duration-300 rounded-sm font-serif relative overflow-hidden"
-            >
-              <span className="relative z-10">已有所问</span>
-              <div className="absolute inset-0 bg-[url('/border-texture.png')] opacity-20" />
+          <div className="stage-box fade-in">
+            <RicePaper size="cover">
+              <span className="cover-text">卷</span>
+            </RicePaper>
+            <p className="hint-main">心中默念你的问题</p>
+            <button onClick={handleFocus} className="seal-btn">
+              <span>已有所问</span>
             </button>
           </div>
         )}
 
         {/* 专注状态 */}
         {stage === 'focusing' && (
-          <div className="text-center animate-fade-in">
-            <div
-              onClick={handleReveal}
-              className="w-56 h-76 md:w-64 md:h-80 border border-amber-800/60 rounded-sm mx-auto mb-10 md:mb-12 flex items-center justify-center bg-[url('/paper-texture.png')] bg-cover shadow-xl cursor-pointer hover:border-amber-600 hover:shadow-amber-900/30 active:scale-[0.98] transition-all duration-300 group relative"
-            >
-              <span className="text-amber-200 text-7xl md:text-8xl font-handwriting group-hover:text-amber-100 transition-colors">
-                册
-              </span>
-              <div className="absolute inset-0 bg-[url('/paper-overlay.png')] opacity-20 rounded-sm" />
-            </div>
-            <p className="text-amber-200 text-lg md:text-xl tracking-widest mb-4">
-              问题已在心中
-            </p>
-            <p className="text-amber-400/80 text-base md:text-lg tracking-wider">
-              点击书册 · 翻开命定之页
-            </p>
+          <div className="stage-box fade-in">
+            <RicePaper size="cover" clickable onClick={handleReveal}>
+              <span className="cover-text">册</span>
+            </RicePaper>
+            <p className="hint-main">问题已在心中</p>
+            <p className="hint-sub">点击书册 · 翻开命定之页</p>
           </div>
         )}
 
         {/* 翻书动画 */}
         {stage === 'revealing' && (
-          <div className="text-center">
-            <div className="w-56 h-76 md:w-64 md:h-80 mx-auto mb-10 md:mb-12 perspective-1000">
-              <div className="w-full h-full animate-flip">
-                <div className="w-full h-full border border-amber-800/50 rounded-sm bg-[url('/paper-texture.png')] bg-cover shadow-2xl flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-[url('/paper-overlay.png')] opacity-20 rounded-sm" />
-                  <div className="animate-pulse text-amber-500 text-5xl">⋯</div>
-                </div>
+          <div className="stage-box">
+            <div className="flip-wrapper">
+              <div className="flip-anim">
+                <RicePaper size="cover">
+                  <div className="loading-icon">⋯</div>
+                </RicePaper>
               </div>
             </div>
-            <p className="text-amber-500 text-lg md:text-xl tracking-widest animate-pulse">
-              翻阅中
-            </p>
+            <p className="hint-main pulse-anim">翻阅中</p>
           </div>
         )}
 
-        {/* 揭示结果 */}
+        {/* 结果页 */}
         {stage === 'revealed' && fortune && (
-          <div className="text-center animate-fade-in-slow w-full">
-            <div className="w-full max-w-md md:max-w-lg min-h-[500px] md:min-h-[580px] border border-amber-900/40 rounded-sm mx-auto mb-8 md:mb-10 bg-[url('/paper-texture.jpg')] bg-cover shadow-2xl p-8 md:p-10 flex flex-col justify-between relative overflow-hidden">
-              {/* 页码 - 红色印章风格 */}
+          <div className="stage-box fade-in-slow result-box">
+            <RicePaper size="large">
+              {/* 页码印章 */}
               {pageNumber && (
-                <div className="absolute top-4 right-4 w-12 h-12 bg-red-700 rounded-full flex items-center justify-center shadow-md">
-                  <span className="text-white text-xs font-bold tracking-wider rotate-12">
-                    {toChineseNum(pageNumber)}
-                  </span>
+                <div className="page-seal">
+                  <span>{toChineseNum(pageNumber)}</span>
                 </div>
               )}
 
-              {/* 主文字 */}
-              <div className="flex-1 flex flex-col items-center justify-center py-8 md:py-12">
+              {/* 签文 */}
+              <div className="fortune-area">
                 {isLongText ? (
                   <div
-                    className="text-3xl md:text-4xl font-handwriting tracking-wider leading-relaxed text-center px-6"
+                    className="fortune-long"
                     style={{ color: typeColors[fortune.type] }}
                   >
                     {fortune.text}
                   </div>
                 ) : fortune.text.length === 1 ? (
                   <div
-                    className="text-9xl md:text-[120px] font-handwriting"
+                    className="fortune-single"
                     style={{ color: typeColors[fortune.type] }}
                   >
                     {fortune.text}
                   </div>
                 ) : (
-                  <div
-                    className="flex flex-col items-center"
-                    style={{ color: typeColors[fortune.type] }}
-                  >
+                  <div className="fortune-vertical">
                     {fortune.text.split('').map((char, i) => (
                       <span
                         key={i}
-                        className="text-5xl md:text-6xl font-handwriting my-2"
+                        className="fortune-char"
+                        style={{
+                          color: typeColors[fortune.type],
+                          animationDelay: `${i * 0.08}s`
+                        }}
                       >
                         {char}
                       </span>
@@ -557,125 +415,641 @@ export default function FortuneBook() {
               </div>
 
               {/* 释义 */}
-              <div className="text-center mt-4">
+              <div className="meaning-area">
                 <div
-                  className="inline-block px-4 py-2 rounded-sm text-base tracking-wider font-serif border border-opacity-30"
+                  className="meaning-box"
                   style={{
                     color: typeColors[fortune.type],
                     borderColor: typeColors[fortune.type],
-                    backgroundColor: `${typeColors[fortune.type]}10`,
                   }}
                 >
                   【{fortune.type}】{typeDescriptions[fortune.type]}
                 </div>
               </div>
+            </RicePaper>
 
-              {/* 装饰角 */}
-              <div className="absolute top-6 left-6 w-8 h-px bg-amber-900/30" />
-              <div className="absolute top-6 left-6 w-px h-8 bg-amber-900/30" />
-              <div className="absolute top-6 right-6 w-8 h-px bg-amber-900/30" />
-              <div className="absolute top-6 right-6 w-px h-8 bg-amber-900/30" />
-              <div className="absolute bottom-6 left-6 w-8 h-px bg-amber-900/30" />
-              <div className="absolute bottom-6 left-6 w-px h-8 bg-amber-900/30" />
-              <div className="absolute bottom-6 right-6 w-8 h-px bg-amber-900/30" />
-              <div className="absolute bottom-6 right-6 w-px h-8 bg-amber-900/30" />
-            </div>
-
-            {/* 提示语 */}
-            <p className="text-amber-400/90 text-base md:text-lg tracking-wider mb-6">
-              文字已落 · 解读在心
-            </p>
-
-            {/* 重新开始 */}
-            <button
-              onClick={handleReset}
-              className="px-8 py-3 text-amber-200 text-lg tracking-widest hover:text-amber-100 active:text-amber-50 transition-colors border border-amber-800 hover:border-amber-700 rounded-sm font-serif relative overflow-hidden"
-            >
-              <span className="relative z-10">再问一卦</span>
-              <div className="absolute inset-0 bg-[url('/border-texture.png')] opacity-20" />
+            <p className="hint-result">文字已落 · 解读在心</p>
+            <button onClick={handleReset} className="seal-btn seal-btn-alt">
+              <span>再问一卦</span>
             </button>
           </div>
         )}
-      </div>
+      </main>
 
-      {/* 底部文字 - 无背景，仅文字 */}
-      <div className="absolute bottom-4 md:bottom-5 text-center w-full z-10">
-        <p className="text-amber-400/80 text-sm tracking-wider italic">
-          信则有 · 不信则无
-        </p>
-      </div>
+      {/* 底部 */}
+      <footer className="app-footer">
+        <p>信则有 · 不信则无</p>
+      </footer>
 
-      {/* 全局样式 */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&family=Ma+Shan+Zheng&display=swap');
+      {/* 样式 */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Zhi+Mang+Xing&family=Ma+Shan+Zheng&display=swap');
 
-        html {
-          font-size: 18px;
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
         }
 
-        @media (max-width: 768px) {
-          html {
-            font-size: 19px;
+        /* ===== 主容器 ===== */
+        .fortune-app {
+          min-height: 100vh;
+          min-height: 100dvh;
+          background: #1a1815;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+          font-family: 'Noto Serif SC', serif;
+          overflow: hidden;
+          position: relative;
+        }
+
+        /* ===== 水墨背景 ===== */
+        .ink-bg {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .ink-blob {
+          position: absolute;
+          width: var(--size);
+          height: var(--size);
+          top: var(--top);
+          left: var(--left);
+          border-radius: 50%;
+          background: radial-gradient(ellipse, rgba(20,18,15,0.9) 0%, rgba(15,13,10,0.5) 50%, transparent 70%);
+          filter: blur(80px);
+          animation: ink-float var(--dur) ease-in-out infinite;
+          animation-delay: var(--delay);
+          opacity: 0.7;
+        }
+
+        @keyframes ink-float {
+          0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+          33% { transform: scale(1.15) translate(15px, -20px); opacity: 0.8; }
+          66% { transform: scale(0.9) translate(-10px, 15px); opacity: 0.5; }
+        }
+
+        /* ===== 对联 - 强制竖排 ===== */
+        .couplet {
+          position: fixed;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.6rem;
+          width: 1.8em;
+          pointer-events: none;
+        }
+
+        .couplet-left {
+          left: 0.5rem;
+        }
+
+        .couplet-right {
+          right: 0.5rem;
+        }
+
+        .couplet-char {
+          font-family: 'Zhi Mang Xing', cursive;
+          font-size: 1.4rem;
+          color: #f0e6d3;
+          text-shadow:
+            0 0 12px rgba(218, 165, 32, 0.9),
+            0 0 24px rgba(218, 165, 32, 0.6),
+            0 0 36px rgba(218, 165, 32, 0.4),
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+          line-height: 1;
+        }
+
+        @media (min-width: 640px) {
+          .couplet-char {
+            font-size: 1.8rem;
+          }
+          .couplet-left { left: 1rem; }
+          .couplet-right { right: 1rem; }
+          .couplet { gap: 0.8rem; }
+        }
+
+        @media (min-width: 1024px) {
+          .couplet-char {
+            font-size: 2.2rem;
+          }
+          .couplet-left { left: 2rem; }
+          .couplet-right { right: 2rem; }
+          .couplet { gap: 1rem; }
+        }
+
+        /* ===== 标题 ===== */
+        .app-header {
+          position: absolute;
+          top: 1.5rem;
+          text-align: center;
+          z-index: 20;
+        }
+
+        .main-title {
+          font-family: 'Zhi Mang Xing', cursive;
+          font-size: 2.5rem;
+          color: #d4af37;
+          letter-spacing: 0.4em;
+          text-shadow:
+            0 0 20px rgba(218, 165, 32, 0.6),
+            3px 3px 6px rgba(0, 0, 0, 0.7);
+        }
+
+        .sub-title {
+          font-family: 'Noto Serif SC', serif;
+          font-size: 1.1rem;
+          color: #c75050;
+          font-weight: 400;
+          letter-spacing: 0.3em;
+          margin-top: 0.4rem;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .title-line {
+          width: 5rem;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, #8b4513, transparent);
+          margin: 0.8rem auto 0;
+        }
+
+        @media (min-width: 640px) {
+          .main-title { font-size: 3rem; }
+          .sub-title { font-size: 1.2rem; }
+        }
+
+        /* ===== 主区域 ===== */
+        .main-area {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          flex: 1;
+          width: 100%;
+          max-width: 36rem;
+          padding: 0 0.5rem;
+          z-index: 15;
+        }
+
+        .stage-box {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          width: 100%;
+        }
+
+        /* ===== 宣纸书页 ===== */
+        .rice-paper {
+          position: relative;
+          width: 16rem;
+          height: 22rem;
+          border: 4px double #8b4513;
+          border-radius: 4px;
+          margin-bottom: 1.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.6),
+            inset 0 0 80px rgba(139, 69, 19, 0.1);
+        }
+
+        .paper-cover {
+          width: 18rem;
+          height: 24rem;
+        }
+
+        .paper-large {
+          width: 100%;
+          max-width: 22rem;
+          height: auto;
+          min-height: 32rem;
+          padding: 2rem 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+          .rice-paper {
+            width: 20rem;
+            height: 28rem;
+          }
+          .paper-cover {
+            width: 22rem;
+            height: 30rem;
+          }
+          .paper-large {
+            max-width: 26rem;
+            min-height: 38rem;
+            padding: 2.5rem 2rem;
           }
         }
 
-        .font-serif {
+        /* 宣纸底色 - 温暖的米白色 */
+        .paper-base {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            170deg,
+            #fcf8f0 0%,
+            #f7f1e3 30%,
+            #f5edd8 60%,
+            #f0e8d5 100%
+          );
+          z-index: 0;
+        }
+
+        /* 纤维纹理 */
+        .paper-fiber {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          opacity: 0.5;
+          background-image:
+            repeating-linear-gradient(
+              90deg,
+              transparent,
+              transparent 3px,
+              rgba(180, 160, 130, 0.08) 3px,
+              rgba(180, 160, 130, 0.08) 6px
+            ),
+            repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 4px,
+              rgba(160, 140, 110, 0.06) 4px,
+              rgba(160, 140, 110, 0.06) 8px
+            ),
+            repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 8px,
+              rgba(200, 180, 150, 0.04) 8px,
+              rgba(200, 180, 150, 0.04) 10px
+            );
+        }
+
+        /* 旧纸斑点 */
+        .paper-aged {
+          position: absolute;
+          inset: 0;
+          z-index: 2;
+          background-image:
+            radial-gradient(ellipse at 15% 20%, rgba(180, 150, 100, 0.15) 0%, transparent 40%),
+            radial-gradient(ellipse at 85% 80%, rgba(170, 140, 90, 0.12) 0%, transparent 35%),
+            radial-gradient(ellipse at 50% 10%, rgba(190, 160, 110, 0.1) 0%, transparent 30%),
+            radial-gradient(ellipse at 30% 90%, rgba(175, 145, 95, 0.1) 0%, transparent 35%),
+            radial-gradient(ellipse at 70% 50%, rgba(185, 155, 105, 0.08) 0%, transparent 40%);
+        }
+
+        .paper-content {
+          position: relative;
+          z-index: 5;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+        }
+
+        .paper-clickable {
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .paper-clickable:hover {
+          transform: translateY(-4px);
+          box-shadow:
+            0 12px 40px rgba(0, 0, 0, 0.7),
+            0 0 20px rgba(218, 165, 32, 0.2),
+            inset 0 0 80px rgba(139, 69, 19, 0.1);
+          border-color: #a0522d;
+        }
+
+        .paper-clickable:active {
+          transform: scale(0.98);
+        }
+
+        /* 四角花纹 */
+        .corner-ornament {
+          position: absolute;
+          width: 2rem;
+          height: 2rem;
+          z-index: 6;
+          opacity: 0.6;
+        }
+
+        .corner-ornament::before,
+        .corner-ornament::after {
+          content: '';
+          position: absolute;
+          background: #8b4513;
+        }
+
+        .corner-tl { top: 0.8rem; left: 0.8rem; }
+        .corner-tl::before { width: 100%; height: 2px; top: 0; left: 0; }
+        .corner-tl::after { width: 2px; height: 100%; top: 0; left: 0; }
+
+        .corner-tr { top: 0.8rem; right: 0.8rem; }
+        .corner-tr::before { width: 100%; height: 2px; top: 0; right: 0; }
+        .corner-tr::after { width: 2px; height: 100%; top: 0; right: 0; }
+
+        .corner-bl { bottom: 0.8rem; left: 0.8rem; }
+        .corner-bl::before { width: 100%; height: 2px; bottom: 0; left: 0; }
+        .corner-bl::after { width: 2px; height: 100%; bottom: 0; left: 0; }
+
+        .corner-br { bottom: 0.8rem; right: 0.8rem; }
+        .corner-br::before { width: 100%; height: 2px; bottom: 0; right: 0; }
+        .corner-br::after { width: 2px; height: 100%; bottom: 0; right: 0; }
+
+        /* ===== 封面字 ===== */
+        .cover-text {
+          font-family: 'Zhi Mang Xing', cursive;
+          font-size: 7rem;
+          color: #4a3728;
+          text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (min-width: 640px) {
+          .cover-text {
+            font-size: 9rem;
+          }
+        }
+
+        /* ===== 提示文字 ===== */
+        .hint-main {
+          color: #d4c4a8;
+          font-size: 1.2rem;
+          letter-spacing: 0.4em;
+          margin-bottom: 1.5rem;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .hint-sub {
+          color: rgba(200, 180, 140, 0.8);
+          font-size: 1rem;
+          letter-spacing: 0.25em;
+        }
+
+        .hint-result {
+          color: rgba(212, 196, 168, 0.9);
+          font-size: 1.1rem;
+          letter-spacing: 0.3em;
+          margin-bottom: 1rem;
+        }
+
+        .pulse-anim {
+          animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+
+        /* ===== 印章按钮 ===== */
+        .seal-btn {
+          padding: 1rem 2.5rem;
+          background: #8b2323;
+          border: none;
+          color: #f5e6c8;
           font-family: 'Noto Serif SC', serif;
+          font-size: 1.1rem;
+          font-weight: 600;
+          letter-spacing: 0.4em;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          position: relative;
+          box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        .font-handwriting {
+        .seal-btn::before {
+          content: '';
+          position: absolute;
+          inset: 3px;
+          border: 1px solid rgba(245, 230, 200, 0.3);
+        }
+
+        .seal-btn:hover {
+          background: #a02828;
+          transform: translateY(-2px);
+          box-shadow:
+            0 6px 16px rgba(0, 0, 0, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .seal-btn:active {
+          transform: scale(0.97);
+        }
+
+        .seal-btn-alt {
+          background: #6b4423;
+        }
+
+        .seal-btn-alt:hover {
+          background: #7d5030;
+        }
+
+        /* ===== 翻页动画 ===== */
+        .flip-wrapper {
+          perspective: 1200px;
+        }
+
+        .flip-anim {
+          animation: flip-book 1.2s ease-in-out;
+        }
+
+        @keyframes flip-book {
+          0% { transform: rotateY(0deg); }
+          50% { transform: rotateY(-90deg); }
+          100% { transform: rotateY(0deg); }
+        }
+
+        .loading-icon {
+          font-size: 4rem;
+          color: #8b4513;
+          animation: pulse 0.8s ease-in-out infinite;
+        }
+
+        /* ===== 结果区域 ===== */
+        .result-box {
+          width: 100%;
+        }
+
+        .page-seal {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          width: 3rem;
+          height: 3rem;
+          background: #a02020;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow:
+            0 3px 10px rgba(0, 0, 0, 0.4),
+            inset 0 1px 2px rgba(255, 255, 255, 0.2);
+          z-index: 10;
+        }
+
+        .page-seal span {
+          color: #f5e6c8;
+          font-size: 0.55rem;
+          font-weight: 700;
+          transform: rotate(15deg);
+        }
+
+        @media (min-width: 640px) {
+          .page-seal {
+            width: 3.5rem;
+            height: 3.5rem;
+          }
+          .page-seal span {
+            font-size: 0.65rem;
+          }
+        }
+
+        .fortune-area {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 1.5rem 0;
+          min-height: 18rem;
+        }
+
+        /* 单字 - 超大 */
+        .fortune-single {
+          font-family: 'Zhi Mang Xing', cursive;
+          font-size: 10rem;
+          line-height: 1;
+          text-shadow:
+            4px 4px 8px rgba(0, 0, 0, 0.15),
+            0 0 40px currentColor;
+          animation: char-reveal 0.8s ease-out;
+        }
+
+        @media (min-width: 640px) {
+          .fortune-single {
+            font-size: 12rem;
+          }
+        }
+
+        /* 四字成语竖排 */
+        .fortune-vertical {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .fortune-char {
+          font-family: 'Zhi Mang Xing', cursive;
+          font-size: 3.5rem;
+          line-height: 1.2;
+          margin: 0.3rem 0;
+          text-shadow:
+            3px 3px 6px rgba(0, 0, 0, 0.15),
+            0 0 25px currentColor;
+          animation: char-reveal 0.5s ease-out backwards;
+        }
+
+        @media (min-width: 640px) {
+          .fortune-char {
+            font-size: 4.5rem;
+            margin: 0.4rem 0;
+          }
+        }
+
+        @keyframes char-reveal {
+          from {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.7);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        /* 长句 */
+        .fortune-long {
           font-family: 'Ma Shan Zheng', cursive;
+          font-size: 2.2rem;
+          line-height: 1.8;
+          text-align: center;
+          padding: 0 1rem;
+          text-shadow:
+            2px 2px 4px rgba(0, 0, 0, 0.1),
+            0 0 20px currentColor;
         }
 
-        .writing-vertical-rl {
-          writing-mode: vertical-rl;
-          text-orientation: mixed;
+        @media (min-width: 640px) {
+          .fortune-long {
+            font-size: 2.8rem;
+          }
+        }
+
+        /* 释义 */
+        .meaning-area {
+          margin-top: auto;
+          padding-top: 1rem;
+        }
+
+        .meaning-box {
+          display: inline-block;
+          padding: 0.6rem 1.2rem;
+          border: 1px solid;
+          font-size: 0.95rem;
+          letter-spacing: 0.15em;
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ===== 底部 ===== */
+        .app-footer {
+          position: absolute;
+          bottom: 1rem;
+          text-align: center;
+          z-index: 20;
+        }
+
+        .app-footer p {
+          color: rgba(180, 160, 130, 0.7);
+          font-size: 0.9rem;
+          letter-spacing: 0.25em;
+          font-style: italic;
+        }
+
+        /* ===== 动画 ===== */
+        .fade-in {
+          animation: fade-in 0.6s ease-out;
+        }
+
+        .fade-in-slow {
+          animation: fade-in-slow 0.8s ease-out;
         }
 
         @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; transform: translateY(15px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fade-in-slow {
           from { opacity: 0; transform: scale(0.95); }
           to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes flip {
-          0% { transform: rotateY(0deg); }
-          50% { transform: rotateY(90deg); }
-          100% { transform: rotateY(0deg); }
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0) translateX(0); opacity: 0.05; }
-          50% { transform: translateY(-20px) translateX(10px); opacity: 0.12; }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out;
-        }
-
-        .animate-fade-in-slow {
-          animation: fade-in-slow 0.8s ease-out;
-        }
-
-        .animate-flip {
-          animation: flip 1.2s ease-in-out;
-        }
-
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-
-        .animate-float {
-          animation: float linear infinite;
-        }
-
-        body {
-          background-color: #0a0a0a;
-          color: #f5f5f5;
         }
       `}</style>
     </div>
