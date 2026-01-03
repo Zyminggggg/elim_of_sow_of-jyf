@@ -337,22 +337,64 @@ const typeDescriptions = {
   "悟": "心中自有答案，向内求索",
 };
 
+
+// 汉字数字映射 (纯 JavaScript)
+const toChineseNum = function (num) {
+  if (num === 0) return '零';
+  const digits = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  const units = ['', '十', '百', '千'];
+  let result = '';
+  let unitIndex = 0;
+  while (num > 0) {
+    const digit = num % 10;
+    if (digit !== 0) {
+      result = digits[digit] + (unitIndex > 0 ? units[unitIndex] : '') + result;
+    } else if (result && !result.startsWith('零')) {
+      result = '零' + result;
+    }
+    num = Math.floor(num / 10);
+    unitIndex++;
+  }
+  return result.replace(/^一十/, '十');
+};
+
+// 对联组件
+const Couplets = function ({ left = "清风明月本无价", right = "近水远山皆有情" }) {
+  return (
+    <>
+      {/* 左侧对联 */}
+      <div className="absolute left-0 top-0 h-full flex items-center pl-4 md:pl-6 lg:pl-8 z-0 pointer-events-none">
+        <div className="flex flex-col items-center text-amber-100 text-xl md:text-2xl lg:text-3xl font-serif writing-vertical-rl leading-[1.4] opacity-90">
+          {left.split('').map((char, i) => (
+            <span key={i} className="tracking-wider">{char}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* 右侧对联 */}
+      <div className="absolute right-0 top-0 h-full flex items-center pr-4 md:pr-6 lg:pr-8 z-0 pointer-events-none">
+        <div className="flex flex-col items-center text-amber-100 text-xl md:text-2xl lg:text-3xl font-serif writing-vertical-rl leading-[1.4] opacity-90">
+          {right.split('').map((char, i) => (
+            <span key={i} className="tracking-wider">{char}</span>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+};
+
 export default function FortuneBook() {
   const [stage, setStage] = useState('initial');
   const [fortune, setFortune] = useState(null);
   const [isFlipping, setIsFlipping] = useState(false);
   const [pageNumber, setPageNumber] = useState(null);
 
-  const handleFocus = () => {
-    setStage('focusing');
-  };
+  const handleFocus = () => setStage('focusing');
 
   const handleReveal = () => {
     if (isFlipping) return;
-
     setIsFlipping(true);
     setStage('revealing');
-
     setTimeout(() => {
       const randomIndex = Math.floor(Math.random() * fortunes.length);
       const randomPage = Math.floor(Math.random() * 999) + 1;
@@ -369,109 +411,135 @@ export default function FortuneBook() {
     setPageNumber(null);
   };
 
-  // 判断是否为长文本
   const isLongText = fortune && fortune.text.length > 6;
 
+  // 动态背景：缓慢飘动的墨点
+  const renderInkDots = () => {
+    return Array.from({ length: 12 }).map((_, i) => (
+      <div
+        key={i}
+        className="absolute rounded-full bg-amber-900/10 animate-float"
+        style={{
+          width: `${Math.random() * 20 + 10}px`,
+          height: `${Math.random() * 20 + 10}px`,
+          top: `${Math.random() * 100}%`,
+          left: `${Math.random() * 100}%`,
+          animationDuration: `${20 + Math.random() * 30}s`,
+          animationDelay: `${Math.random() * 5}s`,
+        }}
+      />
+    ));
+  };
+
   return (
-    <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center p-6 md:p-8 font-serif overflow-hidden">
-      {/* 标题 - 增大尺寸 */}
-      <div className="absolute top-6 md:top-10 text-center z-10">
-        <h1 className="text-stone-400 text-xl md:text-2xl tracking-[0.4em] md:tracking-[0.5em] font-light">
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-4 md:p-6 font-serif overflow-hidden relative">
+      {/* 动态背景墨点 */}
+      {renderInkDots()}
+
+      {/* 对联 */}
+      <Couplets />
+
+      {/* 标题区域 */}
+      <div className="absolute top-6 md:top-8 text-center z-10">
+        <h1 className="text-amber-200 text-2xl md:text-3xl tracking-[0.3em] font-handwriting">
           解忧文字铺
         </h1>
-        <h2 className="text-pink-600 text-lg md:text-xl font-medium">
+        <h2 className="text-rose-500 text-lg md:text-xl font-serif mt-2">
           江大小姐专属
         </h2>
-        <div className="w-16 md:w-20 h-px bg-stone-700 mx-auto mt-3 md:mt-4" />
+        <div className="w-16 md:w-20 h-px bg-amber-900/30 mx-auto mt-3" />
       </div>
 
       {/* 主体区域 */}
-      <div className="flex flex-col items-center justify-center flex-1 w-full max-w-2xl px-4">
-
-        {/* 初始状态 - 增大尺寸 */}
+      <div className="flex flex-col items-center justify-center flex-1 w-full max-w-2xl px-2 md:px-4 z-10">
+        {/* 初始状态 */}
         {stage === 'initial' && (
           <div className="text-center animate-fade-in">
-            <div className="w-52 h-72 md:w-64 md:h-80 border border-stone-700 rounded-sm mx-auto mb-12 md:mb-14 flex items-center justify-center bg-stone-900/50 shadow-2xl">
-              <span className="text-stone-500 text-6xl md:text-7xl font-light">卷</span>
+            <div className="w-56 h-76 md:w-64 md:h-80 border border-amber-900/50 rounded-sm mx-auto mb-10 md:mb-12 flex items-center justify-center bg-[url('/paper-texture.png')] bg-cover shadow-lg relative">
+              <span className="text-amber-100 text-7xl md:text-8xl font-handwriting">卷</span>
+              <div className="absolute inset-0 bg-[url('/paper-overlay.png')] opacity-20 rounded-sm" />
             </div>
-            <p className="text-stone-500 text-base md:text-lg tracking-widest mb-8 md:mb-10 leading-relaxed">
+            <p className="text-amber-200 text-lg md:text-xl tracking-widest mb-8 leading-relaxed">
               心中默念你的问题
             </p>
             <button
               onClick={handleFocus}
-              className="px-12 py-5 border border-stone-600 text-stone-400 text-base md:text-lg tracking-widest hover:bg-stone-800 hover:border-stone-500 active:bg-stone-700 transition-all duration-300 rounded-sm"
+              className="px-10 py-4 border border-amber-800 text-amber-100 text-lg tracking-widest hover:bg-amber-900/30 hover:border-amber-600 active:bg-amber-800/50 transition-all duration-300 rounded-sm font-serif relative overflow-hidden"
             >
-              已有所问
+              <span className="relative z-10">已有所问</span>
+              <div className="absolute inset-0 bg-[url('/border-texture.png')] opacity-20" />
             </button>
           </div>
         )}
 
-        {/* 专注状态 - 增大尺寸 */}
+        {/* 专注状态 */}
         {stage === 'focusing' && (
           <div className="text-center animate-fade-in">
             <div
               onClick={handleReveal}
-              className="w-52 h-72 md:w-64 md:h-80 border border-stone-600 rounded-sm mx-auto mb-12 md:mb-14 flex items-center justify-center bg-stone-900 shadow-2xl cursor-pointer hover:border-stone-500 hover:shadow-amber-900/20 active:scale-[0.98] transition-all duration-300 group"
+              className="w-56 h-76 md:w-64 md:h-80 border border-amber-800/60 rounded-sm mx-auto mb-10 md:mb-12 flex items-center justify-center bg-[url('/paper-texture.png')] bg-cover shadow-xl cursor-pointer hover:border-amber-600 hover:shadow-amber-900/30 active:scale-[0.98] transition-all duration-300 group relative"
             >
-              <span className="text-stone-400 text-6xl md:text-7xl font-light group-hover:text-stone-300 transition-colors">
+              <span className="text-amber-200 text-7xl md:text-8xl font-handwriting group-hover:text-amber-100 transition-colors">
                 册
               </span>
+              <div className="absolute inset-0 bg-[url('/paper-overlay.png')] opacity-20 rounded-sm" />
             </div>
-            <p className="text-stone-400 text-base md:text-lg tracking-widest mb-4 md:mb-5">
+            <p className="text-amber-200 text-lg md:text-xl tracking-widest mb-4">
               问题已在心中
             </p>
-            <p className="text-stone-600 text-sm md:text-base tracking-wider">
+            <p className="text-amber-400/80 text-base md:text-lg tracking-wider">
               点击书册 · 翻开命定之页
             </p>
           </div>
         )}
 
-        {/* 翻书动画 - 增大尺寸 */}
+        {/* 翻书动画 */}
         {stage === 'revealing' && (
           <div className="text-center">
-            <div className="w-52 h-72 md:w-64 md:h-80 mx-auto mb-12 md:mb-14 perspective-1000">
+            <div className="w-56 h-76 md:w-64 md:h-80 mx-auto mb-10 md:mb-12 perspective-1000">
               <div className="w-full h-full animate-flip">
-                <div className="w-full h-full border border-stone-600 rounded-sm bg-stone-900 shadow-2xl flex items-center justify-center">
-                  <div className="animate-pulse text-stone-500 text-4xl">⋯</div>
+                <div className="w-full h-full border border-amber-800/50 rounded-sm bg-[url('/paper-texture.png')] bg-cover shadow-2xl flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-[url('/paper-overlay.png')] opacity-20 rounded-sm" />
+                  <div className="animate-pulse text-amber-500 text-5xl">⋯</div>
                 </div>
               </div>
             </div>
-            <p className="text-stone-500 text-base md:text-lg tracking-widest animate-pulse">
+            <p className="text-amber-500 text-lg md:text-xl tracking-widest animate-pulse">
               翻阅中
             </p>
           </div>
         )}
 
-        {/* 揭示结果 - 增大尺寸 */}
+        {/* 揭示结果 */}
         {stage === 'revealed' && fortune && (
           <div className="text-center animate-fade-in-slow w-full">
-            {/* 书页 - 更大尺寸 */}
-            <div className="w-full max-w-md md:max-w-lg min-h-[480px] md:min-h-[560px] border border-stone-700 rounded-sm mx-auto mb-8 md:mb-10 bg-gradient-to-b from-stone-900 to-stone-950 shadow-2xl p-8 md:p-12 flex flex-col justify-between relative overflow-hidden">
-              {/* 页码 */}
-              <div className="text-stone-700 text-sm md:text-base tracking-wider">
-                第 {pageNumber} 页
-              </div>
+            <div className="w-full max-w-md md:max-w-lg min-h-[500px] md:min-h-[580px] border border-amber-900/40 rounded-sm mx-auto mb-8 md:mb-10 bg-[url('/paper-texture.jpg')] bg-cover shadow-2xl p-8 md:p-10 flex flex-col justify-between relative overflow-hidden">
+              {/* 页码 - 红色印章风格 */}
+              {pageNumber && (
+                <div className="absolute top-4 right-4 w-12 h-12 bg-red-700 rounded-full flex items-center justify-center shadow-md">
+                  <span className="text-white text-xs font-bold tracking-wider rotate-12">
+                    {toChineseNum(pageNumber)}
+                  </span>
+                </div>
+              )}
 
-              {/* 主文字 - 增大尺寸 */}
-              <div className="flex-1 flex flex-col items-center justify-center py-10 md:py-14">
+              {/* 主文字 */}
+              <div className="flex-1 flex flex-col items-center justify-center py-8 md:py-12">
                 {isLongText ? (
-                  // 长文本横排显示
                   <div
-                    className="text-3xl md:text-4xl font-light tracking-wider leading-relaxed text-center px-6"
+                    className="text-3xl md:text-4xl font-handwriting tracking-wider leading-relaxed text-center px-6"
                     style={{ color: typeColors[fortune.type] }}
                   >
                     {fortune.text}
                   </div>
                 ) : fortune.text.length === 1 ? (
-                  // 单字特大显示
                   <div
-                    className="text-9xl md:text-10xl font-light"
+                    className="text-9xl md:text-[120px] font-handwriting"
                     style={{ color: typeColors[fortune.type] }}
                   >
                     {fortune.text}
                   </div>
                 ) : (
-                  // 四字及以下竖排显示
                   <div
                     className="flex flex-col items-center"
                     style={{ color: typeColors[fortune.type] }}
@@ -479,7 +547,7 @@ export default function FortuneBook() {
                     {fortune.text.split('').map((char, i) => (
                       <span
                         key={i}
-                        className="text-5xl md:text-6xl font-light my-2 md:my-3"
+                        className="text-5xl md:text-6xl font-handwriting my-2"
                       >
                         {char}
                       </span>
@@ -488,109 +556,126 @@ export default function FortuneBook() {
                 )}
               </div>
 
-              {/* 释义 - 增大尺寸 */}
-              <div className="text-center">
+              {/* 释义 */}
+              <div className="text-center mt-4">
                 <div
-                  className="inline-block px-5 py-3 rounded-sm text-sm md:text-base tracking-wider"
+                  className="inline-block px-4 py-2 rounded-sm text-base tracking-wider font-serif border border-opacity-30"
                   style={{
                     color: typeColors[fortune.type],
-                    backgroundColor: `${typeColors[fortune.type]}15`
+                    borderColor: typeColors[fortune.type],
+                    backgroundColor: `${typeColors[fortune.type]}10`,
                   }}
                 >
                   【{fortune.type}】{typeDescriptions[fortune.type]}
                 </div>
               </div>
 
-              {/* 装饰角 - 增大尺寸 */}
-              <div className="absolute top-6 left-6 w-8 md:w-12 h-px bg-stone-800" />
-              <div className="absolute top-6 left-6 w-px h-8 md:h-12 bg-stone-800" />
-              <div className="absolute top-6 right-6 w-8 md:w-12 h-px bg-stone-800" />
-              <div className="absolute top-6 right-6 w-px h-8 md:h-12 bg-stone-800" />
-              <div className="absolute bottom-6 left-6 w-8 md:w-12 h-px bg-stone-800" />
-              <div className="absolute bottom-6 left-6 w-px h-8 md:h-12 bg-stone-800" />
-              <div className="absolute bottom-6 right-6 w-8 md:w-12 h-px bg-stone-800" />
-              <div className="absolute bottom-6 right-6 w-px h-8 md:h-12 bg-stone-800" />
+              {/* 装饰角 */}
+              <div className="absolute top-6 left-6 w-8 h-px bg-amber-900/30" />
+              <div className="absolute top-6 left-6 w-px h-8 bg-amber-900/30" />
+              <div className="absolute top-6 right-6 w-8 h-px bg-amber-900/30" />
+              <div className="absolute top-6 right-6 w-px h-8 bg-amber-900/30" />
+              <div className="absolute bottom-6 left-6 w-8 h-px bg-amber-900/30" />
+              <div className="absolute bottom-6 left-6 w-px h-8 bg-amber-900/30" />
+              <div className="absolute bottom-6 right-6 w-8 h-px bg-amber-900/30" />
+              <div className="absolute bottom-6 right-6 w-px h-8 bg-amber-900/30" />
             </div>
 
-            {/* 提示语 - 增大尺寸 */}
-            <p className="text-stone-600 text-sm md:text-base tracking-wider mb-6 md:mb-8">
+            {/* 提示语 */}
+            <p className="text-amber-400/90 text-base md:text-lg tracking-wider mb-6">
               文字已落 · 解读在心
             </p>
 
-            {/* 重新开始 - 增大尺寸 */}
+            {/* 重新开始 */}
             <button
               onClick={handleReset}
-              className="px-10 py-4 text-stone-500 text-base tracking-widest hover:text-stone-400 active:text-stone-300 transition-colors border border-stone-800 hover:border-stone-700 rounded-sm"
+              className="px-8 py-3 text-amber-200 text-lg tracking-widest hover:text-amber-100 active:text-amber-50 transition-colors border border-amber-800 hover:border-amber-700 rounded-sm font-serif relative overflow-hidden"
             >
-              再问一卦
+              <span className="relative z-10">再问一卦</span>
+              <div className="absolute inset-0 bg-[url('/border-texture.png')] opacity-20" />
             </button>
           </div>
         )}
       </div>
 
-      {/* 底部 - 增大尺寸 */}
-      <div className="absolute bottom-4 md:bottom-6 text-center w-full">
-        <p className="text-stone-600 text-xs tracking-wider bg-white/50 px-4 py-2 rounded-full inline-block">
+      {/* 底部文字 - 无背景，仅文字 */}
+      <div className="absolute bottom-4 md:bottom-5 text-center w-full z-10">
+        <p className="text-amber-400/80 text-sm tracking-wider italic">
           信则有 · 不信则无
         </p>
       </div>
 
-      <style>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes fade-in-slow {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        
-        @keyframes flip {
-          0% { transform: rotateY(0deg); }
-          50% { transform: rotateY(90deg); }
-          100% { transform: rotateY(0deg); }
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out;
-        }
-        
-        .animate-fade-in-slow {
-          animation: fade-in-slow 0.8s ease-out;
-        }
-        
-        .animate-flip {
-          animation: flip 1.2s ease-in-out;
-        }
-        
-        .perspective-1000 {
-          perspective: 1000px;
-        }
+      {/* 全局样式 */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&family=Ma+Shan+Zheng&display=swap');
 
-        /* 增大全局字体基础大小 */
         html {
           font-size: 18px;
         }
 
         @media (max-width: 768px) {
           html {
-            font-size: 20px;
+            font-size: 19px;
           }
         }
-        
-        /* 移动端优化 */
-        @supports (-webkit-touch-callout: none) {
-          .min-h-screen {
-            min-height: -webkit-fill-available;
-          }
+
+        .font-serif {
+          font-family: 'Noto Serif SC', serif;
         }
-        
-        /* 安全区域适配 */
-        @supports (padding: env(safe-area-inset-bottom)) {
-          .absolute.bottom-6 {
-            padding-bottom: env(safe-area-inset-bottom);
-          }
+
+        .font-handwriting {
+          font-family: 'Ma Shan Zheng', cursive;
+        }
+
+        .writing-vertical-rl {
+          writing-mode: vertical-rl;
+          text-orientation: mixed;
+        }
+
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fade-in-slow {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes flip {
+          0% { transform: rotateY(0deg); }
+          50% { transform: rotateY(90deg); }
+          100% { transform: rotateY(0deg); }
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0) translateX(0); opacity: 0.05; }
+          50% { transform: translateY(-20px) translateX(10px); opacity: 0.12; }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out;
+        }
+
+        .animate-fade-in-slow {
+          animation: fade-in-slow 0.8s ease-out;
+        }
+
+        .animate-flip {
+          animation: flip 1.2s ease-in-out;
+        }
+
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+
+        .animate-float {
+          animation: float linear infinite;
+        }
+
+        body {
+          background-color: #0a0a0a;
+          color: #f5f5f5;
         }
       `}</style>
     </div>

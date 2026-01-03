@@ -379,6 +379,9 @@ export default function FortuneBook() {
         <h1 className="text-stone-400 text-xl md:text-2xl tracking-[0.4em] md:tracking-[0.5em] font-light">
           解忧文字铺
         </h1>
+        <h2 className="text-pink-600 text-lg md:text-xl font-medium">
+          江大小姐专属
+        </h2>
         <div className="w-16 md:w-20 h-px bg-stone-700 mx-auto mt-3 md:mt-4" />
       </div>
 
@@ -526,8 +529,8 @@ export default function FortuneBook() {
       </div>
 
       {/* 底部 - 增大尺寸 */}
-      <div className="absolute bottom-6 md:bottom-8 text-center">
-        <p className="text-stone-700 text-sm tracking-wider">
+      <div className="absolute bottom-4 md:bottom-6 text-center w-full">
+        <p className="text-stone-600 text-xs tracking-wider bg-white/50 px-4 py-2 rounded-full inline-block">
           信则有 · 不信则无
         </p>
       </div>
