@@ -212,31 +212,32 @@ const toChineseNum = (num) => {
 
 // 水墨背景组件
 const InkMistBackground = () => {
-  const blobs = useMemo(() => [
-    { size: 300, top: 5, left: 10, duration: 90, delay: 0 },
-    { size: 250, top: 70, left: 80, duration: 100, delay: 5 },
-    { size: 350, top: 40, left: 50, duration: 110, delay: 10 },
-    { size: 200, top: 85, left: 25, duration: 80, delay: 3 },
-    { size: 280, top: 20, left: 75, duration: 95, delay: 8 },
-  ], []);
+  // const blobs = useMemo(() => [
+  //   { size: 300, top: 5, left: 10, duration: 90, delay: 0 },
+  //   { size: 250, top: 70, left: 80, duration: 100, delay: 5 },
+  //   { size: 350, top: 40, left: 50, duration: 110, delay: 10 },
+  //   { size: 200, top: 85, left: 25, duration: 80, delay: 3 },
+  //   { size: 280, top: 20, left: 75, duration: 95, delay: 8 },
+  // ], []);
 
-  return (
-    <div className="ink-bg">
-      {blobs.map((b, i) => (
-        <div
-          key={i}
-          className="ink-blob"
-          style={{
-            '--size': `${b.size}px`,
-            '--top': `${b.top}%`,
-            '--left': `${b.left}%`,
-            '--dur': `${b.duration}s`,
-            '--delay': `${b.delay}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
+  // return (
+  //   <div className="ink-bg">
+  //     {blobs.map((b, i) => (
+  //       <div
+  //         key={i}
+  //         className="ink-blob"
+  //         style={{
+  //           '--size': `${b.size}px`,
+  //           '--top': `${b.top}%`,
+  //           '--left': `${b.left}%`,
+  //           '--dur': `${b.duration}s`,
+  //           '--delay': `${b.delay}s`,
+  //         }}
+  //       />
+  //     ))}
+  //   </div>
+  // );
+  return <div className="ink-bg" />;
 };
 
 // 对联组件 - 强制竖排
@@ -467,40 +468,61 @@ export default function FortuneBook() {
         }
 
         /* ===== 水墨背景 ===== */
+/* ===== 古风画卷背景 - 修改版 ===== */
         .ink-bg {
           position: absolute;
           inset: 0;
           overflow: hidden;
           pointer-events: none;
           z-index: 0;
+          
+          /* 1. 这里是背景图链接，你可以换成你自己喜欢的图片的网址 */
+          background-image:  url('https://images.unsplash.com/photo-1518558997970-4ddc236affcd?q=80&w=2800&auto=format&fit=crop'); 
+          /* 2. 让图片铺满屏幕 */
+          background-size: cover;
+          background-position: center;
+          
+          /* 3. 加一层黑色遮罩，防止背景太花看不清前面的字 */
+          filter: brightness(0.6) sepia(0.3); 
         }
 
-        .ink-blob {
+        /* 给背景加一个边框装饰，模拟“装裱”的感觉 */
+        .ink-bg::after {
+          content: '';
           position: absolute;
-          width: var(--size);
-          height: var(--size);
-          top: var(--top);
-          left: var(--left);
-          border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(20,18,15,0.9) 0%, rgba(15,13,10,0.5) 50%, transparent 70%);
-          filter: blur(80px);
-          animation: ink-float var(--dur) ease-in-out infinite;
-          animation-delay: var(--delay);
-          opacity: 0.7;
+          inset: 1rem; /* 距离屏幕边缘的距离 */
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          outline: 1px solid rgba(255, 255, 255, 0.15);
+          outline-offset: 4px;
+          pointer-events: none;
         }
 
-        @keyframes ink-float {
-          0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.6; }
-          33% { transform: scale(1.15) translate(15px, -20px); opacity: 0.8; }
-          66% { transform: scale(0.9) translate(-10px, 15px); opacity: 0.5; }
-        }
+        // .ink-blob {
+        //   position: absolute;
+        //   width: var(--size);
+        //   height: var(--size);
+        //   top: var(--top);
+        //   left: var(--left);
+        //   border-radius: 50%;
+        //   background: radial-gradient(ellipse, rgba(20,18,15,0.9) 0%, rgba(15,13,10,0.5) 50%, transparent 70%);
+        //   filter: blur(80px);
+        //   animation: ink-float var(--dur) ease-in-out infinite;
+        //   animation-delay: var(--delay);
+        //   opacity: 0.7;
+        // }
+
+        // @keyframes ink-float {
+        //   0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+        //   33% { transform: scale(1.15) translate(15px, -20px); opacity: 0.8; }
+        //   66% { transform: scale(0.9) translate(-10px, 15px); opacity: 0.5; }
+        // }
 
         /* ===== 对联 - 强制竖排 ===== */
         .couplet {
           position: fixed;
           top: 50%;
           transform: translateY(-50%);
-          z-index: 10;
+          z-index: 50;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -519,7 +541,7 @@ export default function FortuneBook() {
 
         .couplet-char {
           font-family: 'Zhi Mang Xing', cursive;
-          font-size: 1.4rem;
+          font-size: 2rem;
           color: #f0e6d3;
           text-shadow:
             0 0 12px rgba(218, 165, 32, 0.9),
@@ -552,7 +574,7 @@ export default function FortuneBook() {
           position: absolute;
           top: 1.5rem;
           text-align: center;
-          z-index: 20;
+          z-index: 50;
         }
 
         .main-title {
@@ -597,7 +619,7 @@ export default function FortuneBook() {
           width: 100%;
           max-width: 36rem;
           padding: 0 0.5rem;
-          z-index: 15;
+          z-index: 5;
         }
 
         .stage-box {
@@ -610,19 +632,26 @@ export default function FortuneBook() {
 
         /* ===== 宣纸书页 ===== */
         .rice-paper {
-          position: relative;
+                    position: relative;
           width: 16rem;
           height: 22rem;
-          border: 4px double #8b4513;
-          border-radius: 4px;
+          /* 改动1：边框变细，颜色变淡，不再是大粗框 */
+          border: 1px solid rgba(139, 69, 19, 0.3);
+          /* 改动2：加一点圆角，不那么方 */
+          border-radius: 6px; 
           margin-bottom: 1.5rem;
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          box-shadow:
-            0 8px 32px rgba(0, 0, 0, 0.6),
-            inset 0 0 80px rgba(139, 69, 19, 0.1);
+          /* 改动3：背景模糊滤镜，这是高级感的关键！让背后的山水画模糊透过来 */
+          backdrop-filter: blur(8px); 
+          -webkit-backdrop-filter: blur(8px);
+          /* 改动4：阴影更柔和 */
+          box-shadow: 
+            0 10px 40px rgba(0, 0, 0, 0.5),
+            inset 0 0 40px rgba(255, 248, 220, 0.1);
+        }
         }
 
         .paper-cover {
@@ -660,10 +689,10 @@ export default function FortuneBook() {
           inset: 0;
           background: linear-gradient(
             170deg,
-            #fcf8f0 0%,
-            #f7f1e3 30%,
-            #f5edd8 60%,
-            #f0e8d5 100%
+            rgba(252, 248, 240, 0.85) 0%,   /* 顶部稍微实一点 */
+            rgba(247, 241, 227, 0.80) 30%,
+            rgba(245, 237, 216, 0.75) 60%,  /* 中间透一点 */
+            rgba(240, 232, 213, 0.80) 100%
           );
           z-index: 0;
         }
@@ -753,7 +782,8 @@ export default function FortuneBook() {
         .corner-ornament::after {
           content: '';
           position: absolute;
-          background: #8b4513;
+          /* 颜色改淡，不再是深棕色，而是半透明棕色 */
+          background: rgba(139, 69, 19, 0.4); 
         }
 
         .corner-tl { top: 0.8rem; left: 0.8rem; }

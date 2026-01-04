@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
-// 词库 - 300个精选具有哲理和指引意义的词句
+// 词库 - 精选具有哲理和指引意义的词句
 const fortunes = [
-  // ===== 四字箴言 (150个) =====
+  // ===== 四字箴言 =====
   { text: "一帆风顺", type: "吉" },
   { text: "静待花开", type: "缓" },
   { text: "掩耳盗铃", type: "警" },
@@ -52,15 +52,6 @@ const fortunes = [
   { text: "顺水推舟", type: "策" },
   { text: "借力打力", type: "策" },
   { text: "以逸待劳", type: "策" },
-  { text: "声东击西", type: "策" },
-  { text: "暗度陈仓", type: "策" },
-  { text: "围魏救赵", type: "策" },
-  { text: "欲擒故纵", type: "策" },
-  { text: "抛砖引玉", type: "策" },
-  { text: "釜底抽薪", type: "决" },
-  { text: "金蝉脱壳", type: "策" },
-  { text: "关门捉贼", type: "决" },
-  { text: "反客为主", type: "决" },
   { text: "苦尽甘来", type: "吉" },
   { text: "守得云开", type: "吉" },
   { text: "雨过天晴", type: "吉" },
@@ -74,16 +65,6 @@ const fortunes = [
   { text: "前程似锦", type: "吉" },
   { text: "鹏程万里", type: "吉" },
   { text: "步步高升", type: "吉" },
-  { text: "锦上添花", type: "吉" },
-  { text: "如愿以偿", type: "吉" },
-  { text: "天时地利", type: "吉" },
-  { text: "贵人相助", type: "吉" },
-  { text: "逢凶化吉", type: "吉" },
-  { text: "化险为夷", type: "吉" },
-  { text: "转危为安", type: "吉" },
-  { text: "绝处逢生", type: "吉" },
-  { text: "枯木逢春", type: "吉" },
-  { text: "时来运转", type: "吉" },
   { text: "好事多磨", type: "缓" },
   { text: "事缓则圆", type: "缓" },
   { text: "从长计议", type: "缓" },
@@ -92,79 +73,35 @@ const fortunes = [
   { text: "步步为营", type: "缓" },
   { text: "细水长流", type: "缓" },
   { text: "日积月累", type: "缓" },
-  { text: "聚沙成塔", type: "缓" },
-  { text: "积少成多", type: "缓" },
   { text: "滴水穿石", type: "缓" },
-  { text: "铁杵磨针", type: "缓" },
-  { text: "绳锯木断", type: "缓" },
   { text: "锲而不舍", type: "缓" },
-  { text: "坚持不懈", type: "缓" },
   { text: "有备无患", type: "慎" },
   { text: "居安思危", type: "慎" },
   { text: "防患未然", type: "慎" },
   { text: "谨小慎微", type: "慎" },
-  { text: "如履薄冰", type: "慎" },
-  { text: "战战兢兢", type: "慎" },
   { text: "深思熟虑", type: "慎" },
-  { text: "权衡利弊", type: "慎" },
-  { text: "左右权衡", type: "慎" },
-  { text: "瞻前顾后", type: "慎" },
-  { text: "小心驶船", type: "慎" },
-  { text: "谋定后动", type: "慎" },
   { text: "知己知彼", type: "慎" },
   { text: "量力而行", type: "慎" },
-  { text: "因人而异", type: "慎" },
-  { text: "见机行事", type: "慎" },
   { text: "过犹不及", type: "警" },
   { text: "画蛇添足", type: "警" },
   { text: "弄巧成拙", type: "警" },
-  { text: "自作聪明", type: "警" },
-  { text: "班门弄斧", type: "警" },
-  { text: "螳臂当车", type: "警" },
-  { text: "以卵击石", type: "警" },
-  { text: "飞蛾扑火", type: "警" },
-  { text: "杯弓蛇影", type: "警" },
-  { text: "草木皆兵", type: "警" },
-  { text: "风声鹤唳", type: "警" },
-  { text: "捕风捉影", type: "警" },
-  { text: "空穴来风", type: "警" },
   { text: "杞人忧天", type: "警" },
-  { text: "庸人自扰", type: "警" },
   { text: "作茧自缚", type: "警" },
-  { text: "自食其果", type: "警" },
-  { text: "搬石砸脚", type: "警" },
-  { text: "得不偿失", type: "警" },
-  { text: "因小失大", type: "警" },
-  { text: "顾此失彼", type: "警" },
-  { text: "舍本逐末", type: "警" },
-  { text: "本末倒置", type: "警" },
-  { text: "南辕北辙", type: "警" },
-  { text: "缘木求鱼", type: "警" },
-  { text: "刻舟求剑", type: "警" },
-  { text: "揠苗助长", type: "警" },
-  { text: "急于求成", type: "警" },
-  { text: "操之过急", type: "警" },
   { text: "当机立断", type: "决" },
   { text: "快刀斩麻", type: "决" },
   { text: "雷厉风行", type: "决" },
   { text: "势在必行", type: "决" },
-  { text: "势不可挡", type: "决" },
   { text: "义无反顾", type: "决" },
-  { text: "孤注一掷", type: "决" },
   { text: "背水一战", type: "决" },
-  { text: "放手一搏", type: "决" },
   { text: "勇往直前", type: "决" },
-  { text: "激流勇进", type: "决" },
   { text: "乘风破浪", type: "决" },
-  { text: "披荆斩棘", type: "决" },
-  // ===== 短句箴言 (100个) =====
+  // ===== 短句箴言 =====
   { text: "答案在心中", type: "悟" },
   { text: "再等等看", type: "待" },
   { text: "是时候了", type: "决" },
   { text: "放下执念", type: "止" },
   { text: "相信直觉", type: "决" },
   { text: "退一步海阔天空", type: "策" },
-  { text: "山重水复疑无路", type: "待" },
   { text: "万事俱备", type: "吉" },
   { text: "尚有变数", type: "待" },
   { text: "贵人将至", type: "吉" },
@@ -175,90 +112,31 @@ const fortunes = [
   { text: "此路不通", type: "止" },
   { text: "另寻他路", type: "策" },
   { text: "换个角度", type: "策" },
-  { text: "退而求其次", type: "策" },
-  { text: "柳暗花明又一村", type: "吉" },
   { text: "天无绝人之路", type: "吉" },
-  { text: "船到桥头自然直", type: "缓" },
-  { text: "车到山前必有路", type: "缓" },
   { text: "来日方长", type: "缓" },
-  { text: "路遥知马力", type: "缓" },
-  { text: "日久见人心", type: "缓" },
   { text: "事在人为", type: "决" },
-  { text: "人定胜天", type: "决" },
   { text: "有志者事竟成", type: "决" },
-  { text: "皇天不负有心人", type: "吉" },
   { text: "机不可失", type: "决" },
   { text: "时不我待", type: "决" },
-  { text: "此时不搏何时搏", type: "决" },
-  { text: "该出手时就出手", type: "决" },
-  { text: "三十六计走为上", type: "策" },
   { text: "留得青山在", type: "策" },
-  { text: "小不忍则乱大谋", type: "慎" },
-  { text: "忍一时风平浪静", type: "慎" },
   { text: "吃亏是福", type: "悟" },
   { text: "难得糊涂", type: "悟" },
   { text: "大智若愚", type: "悟" },
-  { text: "返璞归真", type: "悟" },
-  { text: "无为而治", type: "悟" },
-  { text: "顺天应人", type: "悟" },
   { text: "天道酬勤", type: "吉" },
   { text: "善有善报", type: "吉" },
   { text: "福祸相依", type: "悟" },
-  { text: "祸兮福所倚", type: "悟" },
-  { text: "失之东隅收之桑榆", type: "悟" },
-  { text: "塞翁失马焉知非福", type: "悟" },
-  { text: "世事难料", type: "待" },
-  { text: "天机不可泄露", type: "待" },
   { text: "静观其变", type: "待" },
-  { text: "以不变应万变", type: "待" },
-  { text: "兵来将挡", type: "策" },
-  { text: "水来土掩", type: "策" },
-  { text: "见招拆招", type: "策" },
-  { text: "随机应变", type: "策" },
   { text: "伺机而动", type: "待" },
   { text: "按兵不动", type: "待" },
   { text: "暂避锋芒", type: "待" },
   { text: "养精蓄锐", type: "待" },
-  { text: "卧薪尝胆", type: "待" },
-  { text: "忍辱负重", type: "待" },
-  { text: "蛰伏待机", type: "待" },
   { text: "一动不如一静", type: "止" },
-  { text: "过犹不及", type: "止" },
   { text: "适可而止", type: "止" },
-  { text: "点到为止", type: "止" },
   { text: "见好就收", type: "止" },
   { text: "急流勇退", type: "止" },
-  { text: "功成身退", type: "止" },
-  { text: "激流勇退", type: "止" },
-  { text: "知难而退", type: "止" },
   { text: "悬崖勒马", type: "止" },
   { text: "回头是岸", type: "止" },
-  { text: "迷途知返", type: "止" },
-  { text: "亡羊补牢", type: "慎" },
-  { text: "防微杜渐", type: "慎" },
-  { text: "未雨绸缪", type: "慎" },
-  { text: "有备无患", type: "慎" },
-  { text: "三思而后行", type: "慎" },
-  { text: "谋定而后动", type: "慎" },
-  { text: "一着不慎满盘皆输", type: "警" },
-  { text: "千里之堤毁于蚁穴", type: "警" },
-  { text: "小心无大错", type: "慎" },
-  { text: "细节决定成败", type: "慎" },
-  { text: "行百里者半九十", type: "警" },
-  { text: "骄兵必败", type: "警" },
-  { text: "满招损谦受益", type: "警" },
-  { text: "虚心使人进步", type: "悟" },
-  { text: "活到老学到老", type: "悟" },
-  { text: "温故而知新", type: "悟" },
-  { text: "学无止境", type: "悟" },
-  { text: "读万卷书行万里路", type: "悟" },
-  { text: "纸上得来终觉浅", type: "悟" },
-  { text: "实践出真知", type: "悟" },
-  { text: "条条大路通罗马", type: "策" },
-  { text: "殊途同归", type: "策" },
-  { text: "不拘一格", type: "策" },
-  { text: "另辟蹊径", type: "策" },
-  // ===== 单字真言 (50个) =====
+  // ===== 单字真言 =====
   { text: "等", type: "待" },
   { text: "行", type: "决" },
   { text: "止", type: "止" },
@@ -273,54 +151,31 @@ const fortunes = [
   { text: "退", type: "策" },
   { text: "守", type: "慎" },
   { text: "攻", type: "决" },
-  { text: "藏", type: "策" },
-  { text: "显", type: "决" },
   { text: "明", type: "悟" },
-  { text: "暗", type: "策" },
   { text: "刚", type: "决" },
   { text: "柔", type: "策" },
-  { text: "快", type: "决" },
-  { text: "慢", type: "缓" },
-  { text: "轻", type: "缓" },
-  { text: "重", type: "慎" },
-  { text: "急", type: "决" },
-  { text: "缓", type: "缓" },
   { text: "稳", type: "慎" },
-  { text: "险", type: "警" },
   { text: "安", type: "吉" },
-  { text: "危", type: "警" },
   { text: "吉", type: "吉" },
-  { text: "凶", type: "警" },
   { text: "福", type: "吉" },
-  { text: "祸", type: "警" },
   { text: "善", type: "吉" },
-  { text: "恶", type: "警" },
   { text: "真", type: "悟" },
-  { text: "假", type: "警" },
-  { text: "虚", type: "警" },
-  { text: "实", type: "悟" },
-  { text: "空", type: "悟" },
-  { text: "满", type: "警" },
-  { text: "盈", type: "警" },
-  { text: "亏", type: "慎" },
   { text: "圆", type: "吉" },
-  { text: "缺", type: "待" },
   { text: "始", type: "决" },
-  { text: "终", type: "止" },
   { text: "生", type: "吉" },
-  { text: "灭", type: "止" },
 ];
 
+// 中国传统配色 - 在宣纸上使用深色墨色系
 const typeColors = {
-  "吉": "#d4af37",
-  "缓": "#7d9d7d",
-  "警": "#b85c5c",
-  "策": "#6b8cae",
-  "慎": "#9b8574",
-  "待": "#8b7db8",
-  "决": "#c47d5c",
-  "止": "#7a7a7a",
-  "悟": "#9b7b9b",
+  "吉": "#8B4513", // 赭石色
+  "缓": "#2F4F4F", // 黛青色
+  "警": "#8B0000", // 朱红深色
+  "策": "#191970", // 藏蓝色
+  "慎": "#4A4A4A", // 墨灰色
+  "待": "#483D8B", // 紫檀色
+  "决": "#B22222", // 朱砂色
+  "止": "#36454F", // 玄青色
+  "悟": "#4B0082", // 绛紫色
 };
 
 const typeDescriptions = {
@@ -355,32 +210,28 @@ const toChineseNum = (num) => {
   return result.replace(/^一十/, '十');
 };
 
-// 水墨烟雨背景组件 - 纯CSS实现
+// 水墨背景组件
 const InkMistBackground = () => {
-  // 使用useMemo确保墨团位置在组件生命周期内保持稳定
-  const blobs = useMemo(() => {
-    return [
-      { size: 280, top: 10, left: 5, duration: 80, delay: 0 },
-      { size: 220, top: 60, left: 80, duration: 90, delay: 5 },
-      { size: 320, top: 30, left: 50, duration: 100, delay: 10 },
-      { size: 180, top: 80, left: 20, duration: 70, delay: 3 },
-      { size: 260, top: 45, left: 70, duration: 85, delay: 8 },
-      { size: 200, top: 75, left: 45, duration: 95, delay: 12 },
-    ];
-  }, []);
+  const blobs = useMemo(() => [
+    { size: 300, top: 5, left: 10, duration: 90, delay: 0 },
+    { size: 250, top: 70, left: 80, duration: 100, delay: 5 },
+    { size: 350, top: 40, left: 50, duration: 110, delay: 10 },
+    { size: 200, top: 85, left: 25, duration: 80, delay: 3 },
+    { size: 280, top: 20, left: 75, duration: 95, delay: 8 },
+  ], []);
 
   return (
-    <div className="ink-mist-container">
-      {blobs.map((blob, i) => (
+    <div className="ink-bg">
+      {blobs.map((b, i) => (
         <div
           key={i}
           className="ink-blob"
           style={{
-            '--size': `${blob.size}px`,
-            '--top': `${blob.top}%`,
-            '--left': `${blob.left}%`,
-            '--duration': `${blob.duration}s`,
-            '--delay': `${blob.delay}s`,
+            '--size': `${b.size}px`,
+            '--top': `${b.top}%`,
+            '--left': `${b.left}%`,
+            '--dur': `${b.duration}s`,
+            '--delay': `${b.delay}s`,
           }}
         />
       ))}
@@ -388,47 +239,47 @@ const InkMistBackground = () => {
   );
 };
 
-// 对联组件 - 竖排金色光晕效果
-const Couplets = ({ left = "清风明月本无价", right = "近水远山皆有情" }) => {
+// 对联组件 - 强制竖排
+const Couplets = ({ left = "思念无因见 常望明月浅", right = "思卿如满月 夜夜减清辉" }) => {
   return (
     <>
-      {/* 左侧对联 */}
+      {/* 左联 */}
       <div className="couplet couplet-left">
-        <div className="couplet-text">
-          {left.split('').map((char, i) => (
-            <span key={i} className="couplet-char">{char}</span>
-          ))}
-        </div>
+        {left.split('').map((char, i) => (
+          <span key={i} className="couplet-char">{char}</span>
+        ))}
       </div>
-      {/* 右侧对联 */}
+      {/* 右联 */}
       <div className="couplet couplet-right">
-        <div className="couplet-text">
-          {right.split('').map((char, i) => (
-            <span key={i} className="couplet-char">{char}</span>
-          ))}
-        </div>
+        {right.split('').map((char, i) => (
+          <span key={i} className="couplet-char">{char}</span>
+        ))}
       </div>
     </>
   );
 };
 
-// 宣纸书页组件 - 纯CSS纹理
-const PaperPage = ({ children, className = "", onClick, isClickable = false }) => {
+// 宣纸书页组件
+const RicePaper = ({ children, className = "", onClick, clickable = false, size = "normal" }) => {
+  const sizeClass = size === "large" ? "paper-large" : size === "cover" ? "paper-cover" : "";
   return (
     <div
-      className={`paper-page ${className} ${isClickable ? 'paper-clickable' : ''}`}
+      className={`rice-paper ${sizeClass} ${className} ${clickable ? 'paper-clickable' : ''}`}
       onClick={onClick}
     >
-      <div className="paper-texture" />
-      <div className="paper-grain" />
+      {/* 宣纸纹理层 */}
+      <div className="paper-base" />
+      <div className="paper-fiber" />
+      <div className="paper-aged" />
+      {/* 内容 */}
       <div className="paper-content">
         {children}
       </div>
-      {/* 装饰角 */}
-      <div className="corner corner-tl" />
-      <div className="corner corner-tr" />
-      <div className="corner corner-bl" />
-      <div className="corner corner-br" />
+      {/* 四角花纹 */}
+      <div className="corner-ornament corner-tl" />
+      <div className="corner-ornament corner-tr" />
+      <div className="corner-ornament corner-bl" />
+      <div className="corner-ornament corner-br" />
     </div>
   );
 };
@@ -464,30 +315,30 @@ export default function FortuneBook() {
   const isLongText = fortune && fortune.text.length > 6;
 
   return (
-    <div className="fortune-container">
-      {/* 水墨烟雨背景 */}
+    <div className="fortune-app">
+      {/* 水墨背景 */}
       <InkMistBackground />
 
       {/* 对联 */}
       <Couplets />
 
-      {/* 标题区域 */}
-      <header className="header">
+      {/* 标题 */}
+      <header className="app-header">
         <h1 className="main-title">解忧文字铺</h1>
         <h2 className="sub-title">江大小姐专属</h2>
-        <div className="title-divider" />
+        <div className="title-line" />
       </header>
 
-      {/* 主体区域 */}
-      <main className="main-content">
+      {/* 主区域 */}
+      <main className="main-area">
         {/* 初始状态 */}
         {stage === 'initial' && (
-          <div className="stage-content animate-fade-in">
-            <PaperPage className="book-cover">
-              <span className="cover-char">卷</span>
-            </PaperPage>
-            <p className="hint-text">心中默念你的问题</p>
-            <button onClick={handleFocus} className="action-btn">
+          <div className="stage-box fade-in">
+            <RicePaper size="cover">
+              <span className="cover-text">卷</span>
+            </RicePaper>
+            <p className="hint-main">心中默念你的问题</p>
+            <button onClick={handleFocus} className="seal-btn">
               <span>已有所问</span>
             </button>
           </div>
@@ -495,37 +346,33 @@ export default function FortuneBook() {
 
         {/* 专注状态 */}
         {stage === 'focusing' && (
-          <div className="stage-content animate-fade-in">
-            <PaperPage
-              className="book-cover"
-              onClick={handleReveal}
-              isClickable={true}
-            >
-              <span className="cover-char">册</span>
-            </PaperPage>
-            <p className="hint-text">问题已在心中</p>
-            <p className="sub-hint">点击书册 · 翻开命定之页</p>
+          <div className="stage-box fade-in">
+            <RicePaper size="cover" clickable onClick={handleReveal}>
+              <span className="cover-text">册</span>
+            </RicePaper>
+            <p className="hint-main">问题已在心中</p>
+            <p className="hint-sub">点击书册 · 翻开命定之页</p>
           </div>
         )}
 
         {/* 翻书动画 */}
         {stage === 'revealing' && (
-          <div className="stage-content">
-            <div className="flip-container">
-              <div className="flip-animation">
-                <PaperPage className="book-cover">
-                  <div className="loading-dots">⋯</div>
-                </PaperPage>
+          <div className="stage-box">
+            <div className="flip-wrapper">
+              <div className="flip-anim">
+                <RicePaper size="cover">
+                  <div className="loading-icon">⋯</div>
+                </RicePaper>
               </div>
             </div>
-            <p className="hint-text pulse">翻阅中</p>
+            <p className="hint-main pulse-anim">翻阅中</p>
           </div>
         )}
 
-        {/* 揭示结果 */}
+        {/* 结果页 */}
         {stage === 'revealed' && fortune && (
-          <div className="stage-content animate-fade-in-slow result-stage">
-            <PaperPage className="result-page">
+          <div className="stage-box fade-in-slow result-box">
+            <RicePaper size="large">
               {/* 页码印章 */}
               {pageNumber && (
                 <div className="page-seal">
@@ -533,8 +380,8 @@ export default function FortuneBook() {
                 </div>
               )}
 
-              {/* 主文字 */}
-              <div className="fortune-content">
+              {/* 签文 */}
+              <div className="fortune-area">
                 {isLongText ? (
                   <div
                     className="fortune-long"
@@ -557,7 +404,7 @@ export default function FortuneBook() {
                         className="fortune-char"
                         style={{
                           color: typeColors[fortune.type],
-                          animationDelay: `${i * 0.1}s`
+                          animationDelay: `${i * 0.08}s`
                         }}
                       >
                         {char}
@@ -568,36 +415,35 @@ export default function FortuneBook() {
               </div>
 
               {/* 释义 */}
-              <div className="fortune-meaning">
+              <div className="meaning-area">
                 <div
-                  className="meaning-badge"
+                  className="meaning-box"
                   style={{
                     color: typeColors[fortune.type],
                     borderColor: typeColors[fortune.type],
-                    backgroundColor: `${typeColors[fortune.type]}15`,
                   }}
                 >
                   【{fortune.type}】{typeDescriptions[fortune.type]}
                 </div>
               </div>
-            </PaperPage>
+            </RicePaper>
 
-            <p className="hint-text result-hint">文字已落 · 解读在心</p>
-            <button onClick={handleReset} className="action-btn reset-btn">
+            <p className="hint-result">文字已落 · 解读在心</p>
+            <button onClick={handleReset} className="seal-btn seal-btn-alt">
               <span>再问一卦</span>
             </button>
           </div>
         )}
       </main>
 
-      {/* 底部文字 */}
-      <footer className="footer">
+      {/* 底部 */}
+      <footer className="app-footer">
         <p>信则有 · 不信则无</p>
       </footer>
 
-      {/* 全局样式 */}
+      {/* 样式 */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&family=Zhi+Mang+Xing&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Zhi+Mang+Xing&family=Ma+Shan+Zheng&display=swap');
 
         * {
           margin: 0;
@@ -605,11 +451,11 @@ export default function FortuneBook() {
           box-sizing: border-box;
         }
 
-        /* ========== 基础容器 ========== */
-        .fortune-container {
+        /* ===== 主容器 ===== */
+        .fortune-app {
           min-height: 100vh;
           min-height: 100dvh;
-          background: #0a0908;
+          background: #1a1815;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -618,11 +464,10 @@ export default function FortuneBook() {
           font-family: 'Noto Serif SC', serif;
           overflow: hidden;
           position: relative;
-          color: #f5f0e8;
         }
 
-        /* ========== 水墨烟雨背景 ========== */
-        .ink-mist-container {
+        /* ===== 水墨背景 ===== */
+        .ink-bg {
           position: absolute;
           inset: 0;
           overflow: hidden;
@@ -630,51 +475,18 @@ export default function FortuneBook() {
           z-index: 0;
         }
 
-        .ink-blob {
-          position: absolute;
-          width: var(--size);
-          height: var(--size);
-          top: var(--top);
-          left: var(--left);
-          border-radius: 50%;
-          background: radial-gradient(
-            ellipse at center,
-            rgba(30, 28, 25, 0.8) 0%,
-            rgba(20, 18, 15, 0.5) 40%,
-            transparent 70%
-          );
-          filter: blur(60px);
-          animation: ink-breathe var(--duration) ease-in-out infinite;
-          animation-delay: var(--delay);
-          transform-origin: center;
-          opacity: 0.6;
-        }
 
-        @keyframes ink-breathe {
-          0%, 100% {
-            transform: scale(1) translate(0, 0);
-            opacity: 0.5;
-          }
-          25% {
-            transform: scale(1.1) translate(10px, -15px);
-            opacity: 0.7;
-          }
-          50% {
-            transform: scale(0.95) translate(-5px, 10px);
-            opacity: 0.4;
-          }
-          75% {
-            transform: scale(1.05) translate(-10px, -5px);
-            opacity: 0.6;
-          }
-        }
-
-        /* ========== 对联样式 ========== */
+        /* ===== 对联 - 强制竖排 ===== */
         .couplet {
           position: fixed;
           top: 50%;
           transform: translateY(-50%);
-          z-index: 5;
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.6rem;
+          width: 1.8em;
           pointer-events: none;
         }
 
@@ -686,174 +498,203 @@ export default function FortuneBook() {
           right: 0.5rem;
         }
 
-        .couplet-text {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          writing-mode: vertical-rl;
-          text-orientation: upright;
-          font-family: 'Zhi Mang Xing', cursive;
-          font-size: clamp(1rem, 2.5vw, 1.4rem);
-          letter-spacing: 0.3em;
-          color: #f5e6c8;
-          text-shadow: 
-            0 0 10px rgba(212, 175, 55, 0.8),
-            0 0 20px rgba(212, 175, 55, 0.5),
-            0 0 40px rgba(212, 175, 55, 0.3),
-            0 2px 4px rgba(0, 0, 0, 0.8);
-          opacity: 0.7;
-        }
-
         .couplet-char {
-          display: block;
-          margin: 0.15em 0;
+          font-family: 'Zhi Mang Xing', cursive;
+          font-size: 2rem;
+          color: #f0e6d3;
+          text-shadow:
+            0 0 12px rgba(218, 165, 32, 0.9),
+            0 0 24px rgba(218, 165, 32, 0.6),
+            0 0 36px rgba(218, 165, 32, 0.4),
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+          line-height: 1;
         }
 
-        @media (max-width: 640px) {
-          .couplet-text {
-            font-size: 0.85rem;
-            opacity: 0.5;
+        @media (min-width: 640px) {
+          .couplet-char {
+            font-size: 1.8rem;
           }
-          .couplet-left {
-            left: 0.25rem;
-          }
-          .couplet-right {
-            right: 0.25rem;
-          }
+          .couplet-left { left: 1rem; }
+          .couplet-right { right: 1rem; }
+          .couplet { gap: 0.8rem; }
         }
 
-        /* ========== 标题区域 ========== */
-        .header {
+        @media (min-width: 1024px) {
+          .couplet-char {
+            font-size: 2.2rem;
+          }
+          .couplet-left { left: 2rem; }
+          .couplet-right { right: 2rem; }
+          .couplet { gap: 1rem; }
+        }
+
+        /* ===== 标题 ===== */
+        .app-header {
           position: absolute;
           top: 1.5rem;
           text-align: center;
-          z-index: 10;
+          z-index: 20;
         }
 
         .main-title {
           font-family: 'Zhi Mang Xing', cursive;
-          font-size: clamp(1.8rem, 5vw, 2.5rem);
-          color: #e8dcc8;
+          font-size: 2.5rem;
+          color: #d4af37;
           letter-spacing: 0.4em;
-          text-shadow: 
-            0 0 15px rgba(212, 175, 55, 0.4),
-            0 2px 8px rgba(0, 0, 0, 0.6);
-          margin-bottom: 0.5rem;
+          text-shadow:
+            0 0 20px rgba(218, 165, 32, 0.6),
+            3px 3px 6px rgba(0, 0, 0, 0.7);
         }
 
         .sub-title {
           font-family: 'Noto Serif SC', serif;
-          font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-          color: #c75a5a;
+          font-size: 1.1rem;
+          color: #c75050;
           font-weight: 400;
-          letter-spacing: 0.2em;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+          letter-spacing: 0.3em;
+          margin-top: 0.4rem;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
         }
 
-        .title-divider {
-          width: 4rem;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+        .title-line {
+          width: 5rem;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, #8b4513, transparent);
           margin: 0.8rem auto 0;
         }
 
-        /* ========== 主体区域 ========== */
-        .main-content {
+        @media (min-width: 640px) {
+          .main-title { font-size: 3rem; }
+          .sub-title { font-size: 1.2rem; }
+        }
+
+        /* ===== 主区域 ===== */
+        .main-area {
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           flex: 1;
           width: 100%;
-          max-width: 32rem;
-          padding: 0 1rem;
-          z-index: 10;
+          max-width: 36rem;
+          padding: 0 0.5rem;
+          z-index: 15;
         }
 
-        .stage-content {
+        .stage-box {
           display: flex;
           flex-direction: column;
           align-items: center;
           text-align: center;
+          width: 100%;
         }
 
-        /* ========== 宣纸书页 ========== */
-        .paper-page {
+        /* ===== 宣纸书页 ===== */
+        .rice-paper {
           position: relative;
-          width: 14rem;
-          height: 19rem;
+          width: 16rem;
+          height: 22rem;
+          border: 4px double #8b4513;
           border-radius: 4px;
-          margin-bottom: 2rem;
+          margin-bottom: 1.5rem;
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          box-shadow: 
-            0 4px 20px rgba(0, 0, 0, 0.5),
-            0 0 1px rgba(180, 160, 120, 0.3),
-            inset 0 0 60px rgba(0, 0, 0, 0.1);
-          border: 1px solid rgba(120, 100, 70, 0.3);
+          box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.6),
+            inset 0 0 80px rgba(139, 69, 19, 0.1);
         }
 
-        .paper-texture {
+        .paper-cover {
+          width: 18rem;
+          height: 24rem;
+        }
+
+        .paper-large {
+          width: 100%;
+          max-width: 22rem;
+          height: auto;
+          min-height: 32rem;
+          padding: 2rem 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+          .rice-paper {
+            width: 20rem;
+            height: 28rem;
+          }
+          .paper-cover {
+            width: 22rem;
+            height: 30rem;
+          }
+          .paper-large {
+            max-width: 26rem;
+            min-height: 38rem;
+            padding: 2.5rem 2rem;
+          }
+        }
+
+        /* 宣纸底色 - 温暖的米白色 */
+        .paper-base {
           position: absolute;
           inset: 0;
-          background: 
-            linear-gradient(135deg, #2a2520 0%, #1f1b18 50%, #252220 100%);
+          background: linear-gradient(
+            170deg,
+            #fcf8f0 0%,
+            #f7f1e3 30%,
+            #f5edd8 60%,
+            #f0e8d5 100%
+          );
           z-index: 0;
         }
 
-        /* 宣纸纹理 - 纯CSS实现 */
-        .paper-grain {
+        /* 纤维纹理 */
+        .paper-fiber {
           position: absolute;
           inset: 0;
           z-index: 1;
-          opacity: 0.6;
+          opacity: 0.5;
           background-image:
-            /* 细微纤维纹理 */
+            repeating-linear-gradient(
+              90deg,
+              transparent,
+              transparent 3px,
+              rgba(180, 160, 130, 0.08) 3px,
+              rgba(180, 160, 130, 0.08) 6px
+            ),
+            repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 4px,
+              rgba(160, 140, 110, 0.06) 4px,
+              rgba(160, 140, 110, 0.06) 8px
+            ),
             repeating-linear-gradient(
               45deg,
               transparent,
-              transparent 2px,
-              rgba(200, 180, 140, 0.03) 2px,
-              rgba(200, 180, 140, 0.03) 4px
-            ),
-            repeating-linear-gradient(
-              -45deg,
-              transparent,
-              transparent 2px,
-              rgba(180, 160, 120, 0.02) 2px,
-              rgba(180, 160, 120, 0.02) 4px
-            ),
-            /* 粗糙纸面感 */
-            radial-gradient(
-              ellipse at 20% 30%,
-              rgba(200, 180, 150, 0.08) 0%,
-              transparent 50%
-            ),
-            radial-gradient(
-              ellipse at 80% 70%,
-              rgba(180, 160, 130, 0.06) 0%,
-              transparent 40%
-            ),
-            radial-gradient(
-              ellipse at 50% 50%,
-              rgba(160, 140, 110, 0.04) 0%,
-              transparent 60%
-            ),
-            /* 旧纸泛黄效果 */
-            linear-gradient(
-              180deg,
-              rgba(200, 175, 130, 0.1) 0%,
-              transparent 20%,
-              transparent 80%,
-              rgba(180, 155, 110, 0.08) 100%
+              transparent 8px,
+              rgba(200, 180, 150, 0.04) 8px,
+              rgba(200, 180, 150, 0.04) 10px
             );
+        }
+
+        /* 旧纸斑点 */
+        .paper-aged {
+          position: absolute;
+          inset: 0;
+          z-index: 2;
+          background-image:
+            radial-gradient(ellipse at 15% 20%, rgba(180, 150, 100, 0.15) 0%, transparent 40%),
+            radial-gradient(ellipse at 85% 80%, rgba(170, 140, 90, 0.12) 0%, transparent 35%),
+            radial-gradient(ellipse at 50% 10%, rgba(190, 160, 110, 0.1) 0%, transparent 30%),
+            radial-gradient(ellipse at 30% 90%, rgba(175, 145, 95, 0.1) 0%, transparent 35%),
+            radial-gradient(ellipse at 70% 50%, rgba(185, 155, 105, 0.08) 0%, transparent 40%);
         }
 
         .paper-content {
           position: relative;
-          z-index: 2;
+          z-index: 5;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -868,204 +709,228 @@ export default function FortuneBook() {
         }
 
         .paper-clickable:hover {
-          transform: translateY(-2px);
-          box-shadow: 
-            0 8px 30px rgba(0, 0, 0, 0.6),
-            0 0 2px rgba(212, 175, 55, 0.3),
-            inset 0 0 60px rgba(0, 0, 0, 0.1);
-          border-color: rgba(212, 175, 55, 0.4);
+          transform: translateY(-4px);
+          box-shadow:
+            0 12px 40px rgba(0, 0, 0, 0.7),
+            0 0 20px rgba(218, 165, 32, 0.2),
+            inset 0 0 80px rgba(139, 69, 19, 0.1);
+          border-color: #a0522d;
         }
 
         .paper-clickable:active {
           transform: scale(0.98);
         }
 
-        /* 装饰角 */
-        .corner {
+        /* 四角花纹 */
+        .corner-ornament {
           position: absolute;
-          width: 1.5rem;
-          height: 1.5rem;
-          z-index: 3;
+          width: 2rem;
+          height: 2rem;
+          z-index: 6;
+          opacity: 0.6;
         }
 
-        .corner::before,
-        .corner::after {
+        .corner-ornament::before,
+        .corner-ornament::after {
           content: '';
           position: absolute;
-          background: rgba(160, 140, 100, 0.25);
+          background: #8b4513;
         }
 
-        .corner-tl { top: 1rem; left: 1rem; }
-        .corner-tl::before { width: 100%; height: 1px; top: 0; left: 0; }
-        .corner-tl::after { width: 1px; height: 100%; top: 0; left: 0; }
+        .corner-tl { top: 0.8rem; left: 0.8rem; }
+        .corner-tl::before { width: 100%; height: 2px; top: 0; left: 0; }
+        .corner-tl::after { width: 2px; height: 100%; top: 0; left: 0; }
 
-        .corner-tr { top: 1rem; right: 1rem; }
-        .corner-tr::before { width: 100%; height: 1px; top: 0; right: 0; }
-        .corner-tr::after { width: 1px; height: 100%; top: 0; right: 0; }
+        .corner-tr { top: 0.8rem; right: 0.8rem; }
+        .corner-tr::before { width: 100%; height: 2px; top: 0; right: 0; }
+        .corner-tr::after { width: 2px; height: 100%; top: 0; right: 0; }
 
-        .corner-bl { bottom: 1rem; left: 1rem; }
-        .corner-bl::before { width: 100%; height: 1px; bottom: 0; left: 0; }
-        .corner-bl::after { width: 1px; height: 100%; bottom: 0; left: 0; }
+        .corner-bl { bottom: 0.8rem; left: 0.8rem; }
+        .corner-bl::before { width: 100%; height: 2px; bottom: 0; left: 0; }
+        .corner-bl::after { width: 2px; height: 100%; bottom: 0; left: 0; }
 
-        .corner-br { bottom: 1rem; right: 1rem; }
-        .corner-br::before { width: 100%; height: 1px; bottom: 0; right: 0; }
-        .corner-br::after { width: 1px; height: 100%; bottom: 0; right: 0; }
+        .corner-br { bottom: 0.8rem; right: 0.8rem; }
+        .corner-br::before { width: 100%; height: 2px; bottom: 0; right: 0; }
+        .corner-br::after { width: 2px; height: 100%; bottom: 0; right: 0; }
 
-        /* ========== 封面字符 ========== */
-        .cover-char {
+        /* ===== 封面字 ===== */
+        .cover-text {
           font-family: 'Zhi Mang Xing', cursive;
-          font-size: 5rem;
-          color: #c9a959;
-          text-shadow: 
-            0 2px 10px rgba(0, 0, 0, 0.5),
-            0 0 30px rgba(212, 175, 55, 0.2);
+          font-size: 7rem;
+          color: #4a3728;
+          text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
         }
 
-        /* ========== 提示文字 ========== */
-        .hint-text {
-          color: #c9b896;
+        @media (min-width: 640px) {
+          .cover-text {
+            font-size: 9rem;
+          }
+        }
+
+        /* ===== 提示文字 ===== */
+        .hint-main {
+          color: #d4c4a8;
+          font-size: 1.2rem;
+          letter-spacing: 0.4em;
+          margin-bottom: 1.5rem;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .hint-sub {
+          color: rgba(200, 180, 140, 0.8);
+          font-size: 1rem;
+          letter-spacing: 0.25em;
+        }
+
+        .hint-result {
+          color: rgba(212, 196, 168, 0.9);
           font-size: 1.1rem;
           letter-spacing: 0.3em;
-          margin-bottom: 1.5rem;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+          margin-bottom: 1rem;
         }
 
-        .sub-hint {
-          color: rgba(200, 175, 130, 0.7);
-          font-size: 0.95rem;
-          letter-spacing: 0.2em;
-        }
-
-        .pulse {
-          animation: pulse 1.5s ease-in-out infinite;
+        .pulse-anim {
+          animation: pulse 1.2s ease-in-out infinite;
         }
 
         @keyframes pulse {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+          50% { opacity: 0.4; }
         }
 
-        /* ========== 操作按钮 ========== */
-        .action-btn {
-          padding: 0.9rem 2.5rem;
-          background: transparent;
-          border: 1px solid rgba(160, 130, 80, 0.5);
-          color: #d4c4a8;
+        /* ===== 印章按钮 ===== */
+        .seal-btn {
+          padding: 1rem 2.5rem;
+          background: #8b2323;
+          border: none;
+          color: #f5e6c8;
           font-family: 'Noto Serif SC', serif;
-          font-size: 1rem;
-          letter-spacing: 0.3em;
+          font-size: 1.1rem;
+          font-weight: 600;
+          letter-spacing: 0.4em;
           cursor: pointer;
           transition: all 0.3s ease;
           position: relative;
-          overflow: hidden;
+          box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        .action-btn::before {
+        .seal-btn::before {
           content: '';
           position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
-          opacity: 0;
-          transition: opacity 0.3s;
+          inset: 3px;
+          border: 1px solid rgba(245, 230, 200, 0.3);
         }
 
-        .action-btn:hover {
-          border-color: rgba(212, 175, 55, 0.6);
-          color: #e8d8b8;
-          box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+        .seal-btn:hover {
+          background: #a02828;
+          transform: translateY(-2px);
+          box-shadow:
+            0 6px 16px rgba(0, 0, 0, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
-        .action-btn:hover::before {
-          opacity: 1;
+        .seal-btn:active {
+          transform: scale(0.97);
         }
 
-        .action-btn:active {
-          transform: scale(0.98);
+        .seal-btn-alt {
+          background: #6b4423;
         }
 
-        .action-btn span {
-          position: relative;
-          z-index: 1;
+        .seal-btn-alt:hover {
+          background: #7d5030;
         }
 
-        /* ========== 翻页动画 ========== */
-        .flip-container {
-          perspective: 1000px;
+        /* ===== 翻页动画 ===== */
+        .flip-wrapper {
+          perspective: 1200px;
         }
 
-        .flip-animation {
+        .flip-anim {
           animation: flip-book 1.2s ease-in-out;
         }
 
         @keyframes flip-book {
           0% { transform: rotateY(0deg); }
-          50% { transform: rotateY(90deg); }
+          50% { transform: rotateY(-90deg); }
           100% { transform: rotateY(0deg); }
         }
 
-        .loading-dots {
-          font-size: 3rem;
-          color: #c9a959;
+        .loading-icon {
+          font-size: 4rem;
+          color: #8b4513;
           animation: pulse 0.8s ease-in-out infinite;
         }
 
-        /* ========== 结果页面 ========== */
-        .result-stage {
+        /* ===== 结果区域 ===== */
+        .result-box {
           width: 100%;
-        }
-
-        .result-page {
-          width: 100%;
-          max-width: 22rem;
-          height: auto;
-          min-height: 28rem;
-          padding: 2rem 1.5rem;
         }
 
         .page-seal {
           position: absolute;
           top: 1rem;
           right: 1rem;
-          width: 2.8rem;
-          height: 2.8rem;
-          background: #8b2323;
+          width: 3rem;
+          height: 3rem;
+          background: #a02020;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 
-            0 2px 8px rgba(0, 0, 0, 0.4),
-            inset 0 1px 2px rgba(255, 255, 255, 0.1);
+          box-shadow:
+            0 3px 10px rgba(0, 0, 0, 0.4),
+            inset 0 1px 2px rgba(255, 255, 255, 0.2);
           z-index: 10;
         }
 
         .page-seal span {
           color: #f5e6c8;
-          font-size: 0.6rem;
-          font-weight: 600;
-          transform: rotate(12deg);
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          font-size: 0.55rem;
+          font-weight: 700;
+          transform: rotate(15deg);
         }
 
-        .fortune-content {
+        @media (min-width: 640px) {
+          .page-seal {
+            width: 3.5rem;
+            height: 3.5rem;
+          }
+          .page-seal span {
+            font-size: 0.65rem;
+          }
+        }
+
+        .fortune-area {
           flex: 1;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 2rem 0;
-          min-height: 16rem;
+          padding: 1.5rem 0;
+          min-height: 18rem;
         }
 
+        /* 单字 - 超大 */
         .fortune-single {
           font-family: 'Zhi Mang Xing', cursive;
-          font-size: 7rem;
-          text-shadow: 
-            0 4px 15px rgba(0, 0, 0, 0.5),
+          font-size: 10rem;
+          line-height: 1;
+          text-shadow:
+            4px 4px 8px rgba(0, 0, 0, 0.15),
             0 0 40px currentColor;
-          animation: char-appear 0.8s ease-out;
+          animation: char-reveal 0.8s ease-out;
         }
 
+        @media (min-width: 640px) {
+          .fortune-single {
+            font-size: 12rem;
+          }
+        }
+
+        /* 四字成语竖排 */
         .fortune-vertical {
           display: flex;
           flex-direction: column;
@@ -1074,18 +939,26 @@ export default function FortuneBook() {
 
         .fortune-char {
           font-family: 'Zhi Mang Xing', cursive;
-          font-size: 3rem;
+          font-size: 3.5rem;
+          line-height: 1.2;
           margin: 0.3rem 0;
-          text-shadow: 
-            0 2px 10px rgba(0, 0, 0, 0.5),
-            0 0 20px currentColor;
-          animation: char-appear 0.6s ease-out backwards;
+          text-shadow:
+            3px 3px 6px rgba(0, 0, 0, 0.15),
+            0 0 25px currentColor;
+          animation: char-reveal 0.5s ease-out backwards;
         }
 
-        @keyframes char-appear {
+        @media (min-width: 640px) {
+          .fortune-char {
+            font-size: 4.5rem;
+            margin: 0.4rem 0;
+          }
+        }
+
+        @keyframes char-reveal {
           from {
             opacity: 0;
-            transform: translateY(-20px) scale(0.8);
+            transform: translateY(-30px) scale(0.7);
           }
           to {
             opacity: 1;
@@ -1093,140 +966,71 @@ export default function FortuneBook() {
           }
         }
 
+        /* 长句 */
         .fortune-long {
-          font-family: 'Zhi Mang Xing', cursive;
-          font-size: 1.8rem;
+          font-family: 'Ma Shan Zheng', cursive;
+          font-size: 2.2rem;
           line-height: 1.8;
           text-align: center;
           padding: 0 1rem;
-          text-shadow: 
-            0 2px 8px rgba(0, 0, 0, 0.5),
+          text-shadow:
+            2px 2px 4px rgba(0, 0, 0, 0.1),
             0 0 20px currentColor;
         }
 
-        .fortune-meaning {
+        @media (min-width: 640px) {
+          .fortune-long {
+            font-size: 2.8rem;
+          }
+        }
+
+        /* 释义 */
+        .meaning-area {
           margin-top: auto;
           padding-top: 1rem;
         }
 
-        .meaning-badge {
+        .meaning-box {
           display: inline-block;
-          padding: 0.5rem 1rem;
+          padding: 0.6rem 1.2rem;
           border: 1px solid;
-          font-size: 0.85rem;
+          font-size: 0.95rem;
           letter-spacing: 0.15em;
-          border-radius: 2px;
+          background: rgba(255, 255, 255, 0.3);
         }
 
-        .result-hint {
-          color: rgba(200, 175, 130, 0.8);
-        }
-
-        .reset-btn {
-          margin-top: 0.5rem;
-        }
-
-        /* ========== 底部 ========== */
-        .footer {
+        /* ===== 底部 ===== */
+        .app-footer {
           position: absolute;
           bottom: 1rem;
           text-align: center;
-          z-index: 10;
+          z-index: 20;
         }
 
-        .footer p {
-          color: rgba(200, 175, 130, 0.6);
-          font-size: 0.85rem;
-          letter-spacing: 0.2em;
+        .app-footer p {
+          color: rgba(180, 160, 130, 0.7);
+          font-size: 0.9rem;
+          letter-spacing: 0.25em;
           font-style: italic;
         }
 
-        /* ========== 动画 ========== */
-        .animate-fade-in {
+        /* ===== 动画 ===== */
+        .fade-in {
           animation: fade-in 0.6s ease-out;
         }
 
-        .animate-fade-in-slow {
+        .fade-in-slow {
           animation: fade-in-slow 0.8s ease-out;
         }
 
         @keyframes fade-in {
-          from { 
-            opacity: 0; 
-            transform: translateY(10px); 
-          }
-          to { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
+          from { opacity: 0; transform: translateY(15px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fade-in-slow {
-          from { 
-            opacity: 0; 
-            transform: scale(0.95); 
-          }
-          to { 
-            opacity: 1; 
-            transform: scale(1); 
-          }
-        }
-
-        /* ========== 响应式 ========== */
-        @media (min-width: 768px) {
-          .paper-page {
-            width: 16rem;
-            height: 22rem;
-          }
-
-          .cover-char {
-            font-size: 6rem;
-          }
-
-          .result-page {
-            max-width: 26rem;
-            min-height: 32rem;
-            padding: 2.5rem 2rem;
-          }
-
-          .fortune-single {
-            font-size: 8rem;
-          }
-
-          .fortune-char {
-            font-size: 3.5rem;
-          }
-
-          .fortune-long {
-            font-size: 2.2rem;
-          }
-
-          .couplet-left {
-            left: 1.5rem;
-          }
-
-          .couplet-right {
-            right: 1.5rem;
-          }
-
-          .couplet-text {
-            opacity: 0.85;
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .couplet-left {
-            left: 2.5rem;
-          }
-
-          .couplet-right {
-            right: 2.5rem;
-          }
-
-          .couplet-text {
-            font-size: 1.5rem;
-            opacity: 0.9;
-          }
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>
